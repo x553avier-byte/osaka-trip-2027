@@ -609,11 +609,13 @@
     floorMesh.position.set(0, 0, 0.2);
     scene.add(floorMesh);
 
-    // 紅金羅盤公會大地毯（中央）
-    const rugTex = createGrandRugTexture();
+    // 紅金羅盤公會大地毯（中央：套用 Canva 生成精美像素地毯 textures/rug.png）
+    const rugTex = texLoader.load("textures/rug.png");
+    rugTex.magFilter = THREE.NearestFilter;
+    rugTex.colorSpace = THREE.SRGBColorSpace;
     const rug = new THREE.Mesh(
-      new THREE.PlaneGeometry(11.5, 7.2),
-      new THREE.MeshStandardMaterial({ map: rugTex, roughness: 0.95 })
+      new THREE.PlaneGeometry(12.2, 6.4),
+      new THREE.MeshStandardMaterial({ map: rugTex, roughness: 0.94 })
     );
     rug.rotation.x = -Math.PI / 2;
     rug.position.set(0, 0.015, -0.4);
@@ -644,37 +646,41 @@
     rightWall.position.set(18.8, 3.1, 0.4);
     scene.add(rightWall);
 
-    // 3. 🔥 北牆正中央：石砌大壁爐 ＋ 家族遠征大合照壁畫！
-    const fpTex = createFireplaceTexture();
+    // 3. 🔥 北牆正中央：Canva 精繪石砌大壁爐 (textures/fireplace.png)
+    const fpTex = texLoader.load("textures/fireplace.png");
+    fpTex.magFilter = THREE.NearestFilter;
+    fpTex.colorSpace = THREE.SRGBColorSpace;
+    const stoneSideMat = new THREE.MeshStandardMaterial({ color: 0x625d58, roughness: 0.94 });
+    const fpFrontMat = new THREE.MeshStandardMaterial({ map: fpTex, roughness: 0.88 });
     const hearth = new THREE.Mesh(
-      new THREE.BoxGeometry(4.4, 3.8, 1.3),
-      new THREE.MeshStandardMaterial({ map: fpTex, roughness: 0.92 })
+      new THREE.BoxGeometry(4.6, 4.4, 1.3),
+      [stoneSideMat, stoneSideMat, stoneSideMat, stoneSideMat, fpFrontMat, stoneSideMat]
     );
-    hearth.position.set(0, 1.9, -11.5);
+    hearth.position.set(0, 2.2, -11.5);
     scene.add(hearth);
 
     const chimney = new THREE.Mesh(
-      new THREE.BoxGeometry(2.6, 2.6, 1.1),
-      new THREE.MeshStandardMaterial({ color: 0x69645e, roughness: 0.95 })
+      new THREE.BoxGeometry(2.6, 1.9, 1.1),
+      stoneSideMat
     );
-    chimney.position.set(0, 4.9, -11.6);
+    chimney.position.set(0, 5.25, -11.6);
     scene.add(chimney);
 
-    // 壁爐上方懸掛「2027 家族機場大合照」金框畫！
+    // 北牆大合照金框畫廊（懸掛在壁爐右側，不遮擋壁爐造型！）
     const groupPhotoTex = texLoader.load("avatars/day1_group.jpg");
     groupPhotoTex.colorSpace = THREE.SRGBColorSpace;
     const frameBox = new THREE.Mesh(
-      new THREE.BoxGeometry(3.4, 2.0, 0.14),
-      new THREE.MeshStandardMaterial({ color: 0xd99b26, roughness: 0.45, metalness: 0.25 })
+      new THREE.BoxGeometry(3.6, 2.15, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0xd99b26, roughness: 0.42, metalness: 0.25 })
     );
-    frameBox.position.set(0, 4.85, -10.95);
+    frameBox.position.set(4.5, 3.6, -12.08);
     scene.add(frameBox);
 
     const photoPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.1, 1.72),
+      new THREE.PlaneGeometry(3.3, 1.84),
       new THREE.MeshBasicMaterial({ map: groupPhotoTex })
     );
-    photoPlane.position.set(0, 4.85, -10.86);
+    photoPlane.position.set(4.5, 3.6, -11.98);
     scene.add(photoPlane);
 
     // 火焰發光粒子
@@ -693,10 +699,10 @@
     fireLight.position.set(0, 1.8, -9.6);
     scene.add(fireLight);
 
-    // 4. 📚 壁爐兩側高大冒險書櫃
+    // 4. 📚 壁爐左側高大冒險書櫃（右側改為大合照金框畫廊）
     const shelfTex = createBookshelfTexture();
     const shelfMat = new THREE.MeshStandardMaterial({ map: shelfTex, roughness: 0.88 });
-    [-3.1, 3.1].forEach(bx => {
+    [-3.2].forEach(bx => {
       const shelf = new THREE.Mesh(new THREE.BoxGeometry(1.8, 3.4, 0.75), shelfMat);
       shelf.position.set(bx, 1.7, -11.75);
       scene.add(shelf);
@@ -804,13 +810,15 @@
     plaque.position.set(9.2, 3.65, -11.1);
     scene.add(plaque);
 
-    // 鳥居門內：精繪大阪城暮光星空畫作！
-    const osakaArtTex = createOsakaPortalArtTexture();
+    // 鳥居門內：Canva 精繪雪夜大阪城鳥居畫作！(textures/osaka_portal.png)
+    const osakaArtTex = texLoader.load("textures/osaka_portal.png");
+    osakaArtTex.magFilter = THREE.NearestFilter;
+    osakaArtTex.colorSpace = THREE.SRGBColorSpace;
     osakaCurtain = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.0, 3.25),
-      new THREE.MeshBasicMaterial({ map: osakaArtTex, transparent: true, opacity: 0.92, side: THREE.DoubleSide })
+      new THREE.PlaneGeometry(3.5, 3.5),
+      new THREE.MeshBasicMaterial({ map: osakaArtTex, transparent: true, opacity: 0.96, side: THREE.DoubleSide })
     );
-    osakaCurtain.position.set(9.2, 1.65, -11.25);
+    osakaCurtain.position.set(9.2, 1.8, -11.35);
     osakaCurtain.userData = { clickType: "interactable", targetId: "portal-osaka" };
     clickableMeshes.push(osakaCurtain);
     scene.add(osakaCurtain);
@@ -893,13 +901,16 @@
     clickableMeshes.push(barTop);
     scene.add(barTop);
 
-    // 吧檯後方魔藥瓶壁架
-    const barShelfTex = createBarShelfTexture();
+    // 吧檯後方魔藥瓶壁架（套用 Canva 精繪像素酒櫃貼圖 textures/bar_shelf.png，面向大廳 +X 面）
+    const barShelfTex = texLoader.load("textures/bar_shelf.png");
+    barShelfTex.magFilter = THREE.NearestFilter;
+    barShelfTex.colorSpace = THREE.SRGBColorSpace;
+    const barShelfFront = new THREE.MeshStandardMaterial({ map: barShelfTex, roughness: 0.8 });
     const barShelf = new THREE.Mesh(
-      new THREE.BoxGeometry(0.4, 3.2, 7.6),
-      new THREE.MeshStandardMaterial({ map: barShelfTex, roughness: 0.85 })
+      new THREE.BoxGeometry(0.45, 4.0, 7.2),
+      [barShelfFront, oakDark, oakDark, oakDark, oakDark, oakDark]
     );
-    barShelf.position.set(-18.2, 2.5, -0.5);
+    barShelf.position.set(-18.2, 2.75, -0.5);
     scene.add(barShelf);
 
     for (let i = 0; i < 5; i++) {
