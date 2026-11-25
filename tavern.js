@@ -125,6 +125,8 @@
 
   let fireLight = null;
   let fireParticles = [];
+  let chestSparkles = [];
+  let candleFlames = [];
   let lanternLights = [];
   let osakaRing = null;
   let osakaCurtain = null;
@@ -454,40 +456,224 @@
     });
   }
 
-  // 🗺️ 日本關西冒險作戰地圖桌貼圖
-  function createJapanMapTableTexture() {
-    return makePixelCanvasTexture(220, 140, (ctx, w, h) => {
-      // 深橡木桌邊框
+  // ===========================================================================
+  // 豪華物件套件專用像素貼圖（寶箱、關西作戰地圖、雕花木柱、石底座、公會掛旗）
+  // ===========================================================================
+  function createChestWoodTexture() {
+    return makePixelCanvasTexture(128, 128, (ctx, w, h) => {
       ctx.fillStyle = "#5c2b0e";
       ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = "#9c5624";
-      ctx.fillRect(5, 5, w - 10, h - 10);
-      // 羊皮紙海圖底色
-      ctx.fillStyle = "#f7dfa8";
-      ctx.fillRect(14, 14, w - 28, h - 28);
-      ctx.strokeStyle = "#a65e26";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(18, 18, w - 36, h - 36);
-      // 淺藍海洋背景
-      ctx.fillStyle = "#b9dff0";
-      ctx.fillRect(22, 22, w - 44, h - 44);
-      // 像素日本列島剪影（九州、四國、本州、北海道）
-      ctx.fillStyle = "#76b852";
-      ctx.fillRect(42, 82, 18, 22); // 九州
-      ctx.fillRect(64, 84, 20, 14); // 四國
-      ctx.fillRect(56, 62, 74, 20); // 西日本～中部
-      ctx.fillRect(118, 42, 28, 34); // 關東～東北
-      ctx.fillRect(148, 26, 30, 22); // 北海道
-      // 關西大阪紅金星星標記！
-      ctx.fillStyle = "#e03124";
-      ctx.beginPath(); ctx.arc(88, 74, 8, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#ffe066";
-      ctx.beginPath(); ctx.arc(88, 74, 3.5, 0, Math.PI * 2); ctx.fill();
-      // 虛線航線（台灣飛大阪）
-      ctx.strokeStyle = "#c9382b";
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath(); ctx.moveTo(28, 112); ctx.quadraticCurveTo(60, 102, 86, 76); ctx.stroke();
+      const planks = ["#8a4719", "#7a3d14", "#944f1e", "#703610"];
+      for (let r = 0; r < 4; r++) {
+        ctx.fillStyle = planks[r];
+        ctx.fillRect(4, r * 32 + 2, w - 8, 28);
+        ctx.fillStyle = "rgba(255,220,165,0.16)";
+        ctx.fillRect(8, r * 32 + 5, w - 16, 4);
+        ctx.fillStyle = "#3b1706";
+        ctx.fillRect(0, r * 32 + 30, w, 2);
+      }
+      [8, w - 22].forEach(bx => {
+        ctx.fillStyle = "#b87a14";
+        ctx.fillRect(bx, 0, 14, h);
+        ctx.fillStyle = "#ffe066";
+        ctx.fillRect(bx + 2, 0, 4, h);
+        for (let ry = 12; ry < h; ry += 28) {
+          ctx.fillStyle = "#4d2804";
+          ctx.fillRect(bx + 5, ry, 5, 5);
+          ctx.fillStyle = "#fff5bd";
+          ctx.fillRect(bx + 5, ry, 2, 2);
+        }
+      });
+      ctx.fillStyle = "#d99b26";
+      ctx.fillRect(0, 0, w, 8);
+      ctx.fillRect(0, h - 8, w, 8);
     });
+  }
+
+  function createChestMatTexture() {
+    return makePixelCanvasTexture(160, 128, (ctx, w, h) => {
+      ctx.fillStyle = "#33123d";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#5c206b";
+      ctx.fillRect(8, 8, w - 16, h - 16);
+      ctx.strokeStyle = "#f2c14e";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(12, 12, w - 24, h - 24);
+      ctx.strokeStyle = "#d48c24";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(20, 20, w - 40, h - 40);
+      for (let x = 14; x < w - 14; x += 8) {
+        ctx.fillStyle = "#ffd659";
+        ctx.fillRect(x, 2, 4, 6);
+        ctx.fillRect(x, h - 8, 4, 6);
+      }
+      ctx.fillStyle = "#7a2c8e";
+      ctx.beginPath(); ctx.arc(w / 2, h / 2, 28, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#ffd659";
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(w / 2, h / 2, 28, 0, Math.PI * 2); ctx.stroke();
+    });
+  }
+
+  function createDetailedKansaiMapTexture() {
+    return makePixelCanvasTexture(384, 224, (ctx, w, h) => {
+      ctx.fillStyle = "#4a2009";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#8a481c";
+      ctx.fillRect(6, 6, w - 12, h - 12);
+      ctx.strokeStyle = "#d99b26";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(10, 10, w - 20, h - 20);
+
+      ctx.fillStyle = "#f5dba4";
+      ctx.fillRect(18, 16, w - 36, h - 32);
+      ctx.fillStyle = "#aad4e6";
+      ctx.fillRect(26, 24, w - 52, h - 48);
+      ctx.fillStyle = "rgba(255,255,255,0.28)";
+      for (let wy = 34; wy < h - 32; wy += 18) {
+        for (let wx = 34; wx < w - 44; wx += 36) {
+          ctx.fillRect(wx + (wy % 36 === 0 ? 0 : 14), wy, 14, 2);
+        }
+      }
+
+      ctx.fillStyle = "#5c9e47";
+      ctx.fillRect(58, 134, 34, 38);
+      ctx.fillRect(102, 136, 42, 26);
+      ctx.fillRect(92, 92, 140, 40);
+      ctx.fillRect(210, 60, 56, 60);
+      ctx.fillRect(264, 34, 58, 36);
+      ctx.fillStyle = "#7bc25d";
+      ctx.fillRect(98, 98, 126, 26);
+      ctx.fillRect(216, 66, 44, 46);
+      ctx.fillRect(272, 40, 42, 24);
+      ctx.fillStyle = "#aad4e6";
+      ctx.fillRect(144, 120, 22, 18);
+
+      ctx.strokeStyle = "#c92a22";
+      ctx.lineWidth = 3;
+      ctx.setLineDash([7, 5]);
+      ctx.beginPath();
+      ctx.moveTo(40, 184);
+      ctx.quadraticCurveTo(96, 174, 152, 126);
+      ctx.lineTo(164, 108);
+      ctx.lineTo(182, 102);
+      ctx.lineTo(186, 118);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      const cx = w - 62, cy = h - 54;
+      ctx.strokeStyle = "#6e3814";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, 22, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "#c9382b";
+      ctx.beginPath(); ctx.moveTo(cx, cy - 20); ctx.lineTo(cx + 6, cy); ctx.lineTo(cx - 6, cy); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#d99b26";
+      ctx.beginPath(); ctx.moveTo(cx, cy + 20); ctx.lineTo(cx + 6, cy); ctx.lineTo(cx - 6, cy); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(cx + 20, cy); ctx.lineTo(cx, cy + 5); ctx.lineTo(cx, cy - 5); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(cx - 20, cy); ctx.lineTo(cx, cy + 5); ctx.lineTo(cx, cy - 5); ctx.closePath(); ctx.fill();
+
+      [[24, 22], [w - 30, 22], [24, h - 28], [w - 30, h - 28]].forEach(([nx, ny]) => {
+        ctx.fillStyle = "#d99b26";
+        ctx.fillRect(nx, ny, 6, 6);
+        ctx.fillStyle = "#fff4bd";
+        ctx.fillRect(nx + 1, ny + 1, 2, 2);
+      });
+    });
+  }
+
+  function createPillarWoodTexture() {
+    return makePixelCanvasTexture(64, 160, (ctx, w, h) => {
+      ctx.fillStyle = "#6e3613";
+      ctx.fillRect(0, 0, w, h);
+      for (let x = 4; x < w - 4; x += 10) {
+        ctx.fillStyle = "#52240a";
+        ctx.fillRect(x, 0, 3, h);
+        ctx.fillStyle = "#8a491d";
+        ctx.fillRect(x + 3, 0, 4, h);
+        ctx.fillStyle = "#a35b29";
+        ctx.fillRect(x + 7, 0, 2, h);
+      }
+      [14, 76, 138].forEach(by => {
+        ctx.fillStyle = "#2b2523";
+        ctx.fillRect(0, by, w, 12);
+        ctx.fillStyle = "#4d4440";
+        ctx.fillRect(0, by + 2, w, 3);
+        for (let rx = 8; rx < w - 6; rx += 16) {
+          ctx.fillStyle = "#f2be42";
+          ctx.fillRect(rx, by + 4, 4, 4);
+        }
+      });
+    });
+  }
+
+  function createStoneBaseTexture() {
+    return makePixelCanvasTexture(64, 64, (ctx, w, h) => {
+      ctx.fillStyle = "#4a4743";
+      ctx.fillRect(0, 0, w, h);
+      const shades = ["#7d7871", "#6b6660", "#8c867f", "#5e5a55"];
+      for (let r = 0; r < 4; r++) {
+        const off = (r % 2) * 16;
+        for (let x = -16; x < w; x += 32) {
+          ctx.fillStyle = shades[(r + Math.abs(x)) % shades.length];
+          ctx.fillRect(x + off + 1, r * 16 + 1, 30, 14);
+          ctx.fillStyle = "rgba(255,250,240,0.18)";
+          ctx.fillRect(x + off + 2, r * 16 + 2, 28, 2);
+        }
+      }
+    });
+  }
+
+  function createGuildBannerTexture() {
+    return makePixelCanvasTexture(64, 128, (ctx, w, h) => {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#8e1c24";
+      ctx.beginPath();
+      ctx.moveTo(4, 0); ctx.lineTo(w - 4, 0);
+      ctx.lineTo(w - 4, h - 22);
+      ctx.lineTo(w / 2, h - 4);
+      ctx.lineTo(4, h - 22);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#f2c14e";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(8, 4); ctx.lineTo(w - 8, 4);
+      ctx.lineTo(w - 8, h - 24);
+      ctx.lineTo(w / 2, h - 9);
+      ctx.lineTo(8, h - 24);
+      ctx.closePath();
+      ctx.stroke();
+      const cx = w / 2, cy = 48;
+      ctx.fillStyle = "#ffd966";
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 22); ctx.lineTo(cx + 6, cy - 6);
+      ctx.lineTo(cx + 22, cy); ctx.lineTo(cx + 6, cy + 6);
+      ctx.lineTo(cx, cy + 22); ctx.lineTo(cx - 6, cy + 6);
+      ctx.lineTo(cx - 22, cy); ctx.lineTo(cx - 6, cy - 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#8e1c24";
+      ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+
+  function createWarmHaloTexture() {
+    const c = document.createElement("canvas");
+    c.width = 64; c.height = 64;
+    const ctx = c.getContext("2d");
+    const g = ctx.createRadialGradient(32, 32, 2, 32, 32, 30);
+    g.addColorStop(0, "rgba(255, 240, 168, 0.92)");
+    g.addColorStop(0.45, "rgba(255, 190, 75, 0.35)");
+    g.addColorStop(1, "rgba(255, 160, 40, 0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }
+
+  function createJapanMapTableTexture() {
+    return createDetailedKansaiMapTexture();
   }
 
   function createSignSprite(text, bgColor = "#6e3412", borderColor = "#f5c556", textColor = "#fff8dc") {
@@ -743,44 +929,101 @@
     clickableMeshes.push(boardSign);
     scene.add(boardSign);
 
-    // 6. 🧰 公會黃金寶箱展示台（西北角，點了直達寶箱頁！）
-    const chestMat = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.0, 2.6),
-      new THREE.MeshStandardMaterial({ color: 0x5c2a6b, roughness: 0.95 })
-    );
-    chestMat.rotation.x = -Math.PI / 2;
-    chestMat.position.set(-9.7, 0.016, -7.7);
-    scene.add(chestMat);
+    // 6. 🧰 公會黃金寶箱展示台套件（圓拱金框寶箱＋皇家絨墊＋金幣寶石＋漂浮金光！）
+    const chestGroup = new THREE.Group();
+    chestGroup.position.set(-9.7, 0, -7.7);
+    scene.add(chestGroup);
 
-    const chestBase = new THREE.Mesh(
-      new THREE.BoxGeometry(1.5, 0.85, 1.0),
-      new THREE.MeshStandardMaterial({ color: 0x8a481b, roughness: 0.7 })
+    const chestRugTex = createChestMatTexture();
+    const chestMatMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.4, 2.7),
+      new THREE.MeshStandardMaterial({ map: chestRugTex, roughness: 0.95 })
     );
-    chestBase.position.set(-9.7, 0.45, -7.7);
+    chestMatMesh.rotation.x = -Math.PI / 2;
+    chestMatMesh.position.y = 0.018;
+    chestGroup.add(chestMatMesh);
+
+    const chestWoodTex = createChestWoodTexture();
+    const chestWoodMat = new THREE.MeshStandardMaterial({ map: chestWoodTex, roughness: 0.65 });
+    const brassMat = new THREE.MeshStandardMaterial({ color: 0xffcf40, emissive: 0x5c3800, roughness: 0.3, metalness: 0.45 });
+    const ironDarkMat = new THREE.MeshStandardMaterial({ color: 0x2d2724, roughness: 0.7, metalness: 0.5 });
+
+    // 寶箱木質基座＋四個鍍金護角
+    const chestBase = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.78, 1.08), chestWoodMat);
+    chestBase.position.y = 0.41;
     chestBase.userData = { clickType: "interactable", targetId: "guild-chest" };
     clickableMeshes.push(chestBase);
-    scene.add(chestBase);
+    chestGroup.add(chestBase);
 
-    const chestLid = new THREE.Mesh(
-      new THREE.BoxGeometry(1.58, 0.34, 1.06),
-      new THREE.MeshStandardMaterial({ color: 0xb05d22, roughness: 0.65 })
+    // 圓弧拱形寶箱上蓋 (Barrel-top arched lid!)
+    const archedLid = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.55, 0.55, 1.78, 12, 1, false, 0, Math.PI),
+      chestWoodMat
     );
-    chestLid.position.set(-9.7, 1.0, -7.7);
-    chestLid.userData = { clickType: "interactable", targetId: "guild-chest" };
-    clickableMeshes.push(chestLid);
-    scene.add(chestLid);
+    archedLid.rotation.z = Math.PI / 2;
+    archedLid.position.y = 0.80;
+    archedLid.userData = { clickType: "interactable", targetId: "guild-chest" };
+    clickableMeshes.push(archedLid);
+    chestGroup.add(archedLid);
 
-    const chestGoldBand = new THREE.Mesh(
-      new THREE.BoxGeometry(1.62, 0.2, 1.1),
-      new THREE.MeshStandardMaterial({ color: 0xffd147, emissive: 0x5c3a00, roughness: 0.35 })
+    // 三道鍍金鐵箍環繞拱蓋
+    [-0.78, 0, 0.78].forEach(sx => {
+      const strap = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.575, 0.575, 0.14, 12, 1, false, 0, Math.PI),
+        brassMat
+      );
+      strap.rotation.z = Math.PI / 2;
+      strap.position.set(sx, 0.80, 0);
+      chestGroup.add(strap);
+    });
+
+    // 中央雕花金鎖牌＋發光綠寶石鎖扣
+    const lockPlate = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.42, 0.12), brassMat);
+    lockPlate.position.set(0, 0.72, 0.54);
+    lockPlate.userData = { clickType: "interactable", targetId: "guild-chest" };
+    clickableMeshes.push(lockPlate);
+    chestGroup.add(lockPlate);
+
+    const gemClasp = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.11, 0),
+      new THREE.MeshBasicMaterial({ color: 0x3bf08a })
     );
-    chestGoldBand.position.set(-9.7, 0.84, -7.7);
-    chestGoldBand.userData = { clickType: "interactable", targetId: "guild-chest" };
-    clickableMeshes.push(chestGoldBand);
-    scene.add(chestGoldBand);
+    gemClasp.position.set(0, 0.74, 0.62);
+    chestGroup.add(gemClasp);
+
+    // 寶箱旁的閃亮金幣堆與紅藍寶石裝飾
+    [[-1.15, 0.35, 3], [-1.02, 0.52, 2], [1.12, 0.25, 4], [1.24, 0.46, 2]].forEach(([cx, cz, count]) => {
+      for (let i = 0; i < count; i++) {
+        const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.04, 10), brassMat);
+        coin.position.set(cx, 0.04 + i * 0.045, cz);
+        chestGroup.add(coin);
+      }
+    });
+    const rubyGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.15, 0), new THREE.MeshStandardMaterial({ color: 0xff2e55, emissive: 0x6b081c, roughness: 0.2 }));
+    rubyGem.position.set(1.06, 0.16, -0.35);
+    chestGroup.add(rubyGem);
+    const sapphGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0b4a6e, roughness: 0.2 }));
+    sapphGem.position.set(-1.12, 0.14, -0.25);
+    chestGroup.add(sapphGem);
+
+    // 寶箱暖金光暈與漂浮金光微粒
+    const chestLight = new THREE.PointLight(0xffcf40, 1.8, 7.5);
+    chestLight.position.set(0, 1.55, 0.3);
+    chestGroup.add(chestLight);
+
+    for (let i = 0; i < 6; i++) {
+      const sp = new THREE.Mesh(
+        new THREE.BoxGeometry(0.09, 0.09, 0.09),
+        new THREE.MeshBasicMaterial({ color: i % 2 ? 0xfff5a8 : 0xffcf40 })
+      );
+      sp.position.set((Math.random() - 0.5) * 1.6, 0.9 + Math.random() * 0.9, (Math.random() - 0.5) * 0.9);
+      sp.userData = { baseX: sp.position.x, baseZ: sp.position.z, phase: Math.random() * Math.PI * 2, speed: 0.55 + Math.random() * 0.45 };
+      chestGroup.add(sp);
+      chestSparkles.push(sp);
+    }
 
     const chestSign = createSignSprite("🧰 戰利品寶箱台", "#6b2d6b", "#ffd447");
-    chestSign.position.set(-9.7, 2.35, -7.7);
+    chestSign.position.set(-9.7, 2.55, -7.7);
     chestSign.userData = { clickType: "interactable", targetId: "guild-chest" };
     clickableMeshes.push(chestSign);
     scene.add(chestSign);
@@ -935,25 +1178,117 @@
     clickableMeshes.push(barSign);
     scene.add(barSign);
 
-    // 10. 🗺️ 中央偏南「日本關西作戰地圖大桌」（無椅子！點了看行程）
-    const mapTex = createJapanMapTableTexture();
+    // 10. 🗺️ 中央偏南「關西遠征作戰地圖大桌套件」（雕花桌＋3D 圖釘＋捲軸＋羅盤＋羽筆＋燭台！）
+    const mapGroup = new THREE.Group();
+    mapGroup.position.set(0, 0, 5.2);
+    scene.add(mapGroup);
+
+    const mapTex = createDetailedKansaiMapTexture();
     const mapTableTop = new THREE.Mesh(
-      new THREE.BoxGeometry(4.8, 0.18, 2.2),
-      [oakDark, oakDark, new THREE.MeshStandardMaterial({ map: mapTex, roughness: 0.78 }), oakDark, oakDark, oakDark]
+      new THREE.BoxGeometry(5.1, 0.22, 2.5),
+      [oakDark, oakDark, new THREE.MeshStandardMaterial({ map: mapTex, roughness: 0.72 }), oakDark, oakDark, oakDark]
     );
-    mapTableTop.position.set(0, 0.92, 5.2);
+    mapTableTop.position.y = 0.94;
     mapTableTop.userData = { clickType: "interactable", targetId: "map-table" };
     clickableMeshes.push(mapTableTop);
-    scene.add(mapTableTop);
+    mapGroup.add(mapTableTop);
 
-    [[-1.8, 4.5], [1.8, 4.5], [-1.8, 5.9], [1.8, 5.9]].forEach(([lx, lz]) => {
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.9, 0.24), oakDark);
-      leg.position.set(lx, 0.45, lz);
-      scene.add(leg);
+    // 雕花桌圍裙板與 H 型加固橫樑
+    const apron = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.22, 2.05), oakDark);
+    apron.position.y = 0.74;
+    mapGroup.add(apron);
+
+    const crossBar = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.14, 0.18), oakDark);
+    crossBar.position.y = 0.26;
+    mapGroup.add(crossBar);
+
+    [[-2.1, -0.9], [2.1, -0.9], [-2.1, 0.9], [2.1, 0.9]].forEach(([lx, lz]) => {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.88, 0.28), oakDark);
+      leg.position.set(lx, 0.44, lz);
+      mapGroup.add(leg);
+      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.14, 0.36), oakTop);
+      foot.position.set(lx, 0.07, lz);
+      mapGroup.add(foot);
+      const cornerBrass = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.24, 0.26), brassMat);
+      cornerBrass.position.set(lx * 1.17, 0.95, lz * 1.28);
+      mapGroup.add(cornerBrass);
     });
 
+    // 3D 桌上作戰道具：大阪／京都／奈良立體發光圖釘！
+    [[-0.35, 0.05, 0xff3b30], [0.05, -0.18, 0xffcc00], [0.22, 0.12, 0x34c759]].forEach(([px, pz, col]) => {
+      const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.28, 6), brassMat);
+      needle.position.set(px, 1.18, pz);
+      mapGroup.add(needle);
+      const pinHead = new THREE.Mesh(
+        new THREE.SphereGeometry(0.085, 8, 8),
+        new THREE.MeshBasicMaterial({ color: col })
+      );
+      pinHead.position.set(px, 1.34, pz);
+      mapGroup.add(pinHead);
+    });
+
+    // 迷你紅色小鳥居模型立在京都位置
+    const miniToriiL = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.34, 6), toriiRed);
+    miniToriiL.position.set(0.38, 1.22, -0.35);
+    mapGroup.add(miniToriiL);
+    const miniToriiR = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.34, 6), toriiRed);
+    miniToriiR.position.set(0.62, 1.22, -0.35);
+    mapGroup.add(miniToriiR);
+    const miniToriiTop = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.05, 0.07), toriiRed);
+    miniToriiTop.position.set(0.5, 1.39, -0.35);
+    mapGroup.add(miniToriiTop);
+
+    // 兩卷紅緞帶羊皮紙捲軸（左側）
+    const scrollMat = new THREE.MeshStandardMaterial({ color: 0xf7e3b5, roughness: 0.9 });
+    [[-1.85, -0.45, 0.25], [-1.68, -0.25, -0.15]].forEach(([sx, sz, rot]) => {
+      const sc = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.78, 10), scrollMat);
+      sc.rotation.z = Math.PI / 2;
+      sc.rotation.y = rot;
+      sc.position.set(sx, 1.14, sz);
+      mapGroup.add(sc);
+      const rib = new THREE.Mesh(new THREE.CylinderGeometry(0.096, 0.096, 0.1, 10), toriiRed);
+      rib.rotation.z = Math.PI / 2;
+      rib.rotation.y = rot;
+      rib.position.set(sx, 1.14, sz);
+      mapGroup.add(rib);
+    });
+
+    // 黃銅探險羅盤（右前角）
+    const compBody = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.08, 14), brassMat);
+    compBody.position.set(1.65, 1.09, 0.58);
+    mapGroup.add(compBody);
+    const compFace = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.09, 14), new THREE.MeshBasicMaterial({ color: 0xfff8e6 }));
+    compFace.position.set(1.65, 1.095, 0.58);
+    mapGroup.add(compFace);
+
+    // 墨水瓶與白色羽毛筆（左下角）
+    const inkBottle = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.18, 8), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3 }));
+    inkBottle.position.set(-1.82, 1.14, 0.62);
+    mapGroup.add(inkBottle);
+    const quill = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.55, 5), new THREE.MeshBasicMaterial({ color: 0xfffdf5 }));
+    quill.position.set(-1.72, 1.38, 0.58);
+    quill.rotation.z = -0.35;
+    mapGroup.add(quill);
+
+    // 桌上黃銅燭台＋搖曳火光
+    const holder = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.06, 10), brassMat);
+    holder.position.set(1.92, 1.08, -0.58);
+    mapGroup.add(holder);
+    const wax = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.32, 8), new THREE.MeshStandardMaterial({ color: 0xfff3d6 }));
+    wax.position.set(1.92, 1.24, -0.58);
+    mapGroup.add(wax);
+    const mapFlame = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.16, 6), new THREE.MeshBasicMaterial({ color: 0xffd24d }));
+    mapFlame.position.set(1.92, 1.46, -0.58);
+    mapGroup.add(mapFlame);
+    candleFlames.push(mapFlame);
+
+    const mapCandleLight = new THREE.PointLight(0xffbe55, 1.4, 7.5);
+    mapCandleLight.position.set(1.92, 1.75, -0.58);
+    mapGroup.add(mapCandleLight);
+    lanternLights.push(mapCandleLight);
+
     const mapSign = createSignSprite("🗺️ 關西作戰地圖桌", "#245435", "#ffd447");
-    mapSign.position.set(0, 2.35, 5.2);
+    mapSign.position.set(0, 2.65, 5.2);
     mapSign.userData = { clickType: "interactable", targetId: "map-table" };
     clickableMeshes.push(mapSign);
     scene.add(mapSign);
@@ -976,24 +1311,91 @@
     addCandleTable(-8.7, 5.8);
     addCandleTable(8.9, 5.8);
 
-    // 12. 🏮 四根公會大廳木柱＋暖光懸掛燈籠
+    // 12. 🏛️ 四根雕花橡木公會立柱套件（石磚雙層底座＋鍛鐵木柱＋燕尾公會旗＋鍛鐵暖光提燈！）
+    const pillarWoodTex = createPillarWoodTexture();
+    const pillarWoodMat = new THREE.MeshStandardMaterial({ map: pillarWoodTex, roughness: 0.82 });
+    const stoneBaseTex = createStoneBaseTexture();
+    const stoneBaseMat = new THREE.MeshStandardMaterial({ map: stoneBaseTex, roughness: 0.92 });
+    const bannerTex = createGuildBannerTexture();
+    const bannerMat = new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true, alphaTest: 0.1, side: THREE.DoubleSide });
+    const haloTex = createWarmHaloTexture();
+
     [[-6.3, -3.3], [6.3, -3.3], [-6.3, 3.0], [6.3, 3.0]].forEach(([px, pz]) => {
-      const col = new THREE.Mesh(new THREE.BoxGeometry(0.65, 5.8, 0.65), oakDark);
-      col.position.set(px, 2.9, pz);
-      scene.add(col);
-      const trim = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.35, 0.82), oakTop);
-      trim.position.set(px, 0.2, pz);
-      scene.add(trim);
-      // 柱旁懸掛暖黃燈籠
-      const lantern = new THREE.Mesh(
-        new THREE.BoxGeometry(0.32, 0.44, 0.32),
-        new THREE.MeshBasicMaterial({ color: 0xffe07a })
+      const pg = new THREE.Group();
+      pg.position.set(px, 0, pz);
+      scene.add(pg);
+
+      const inward = px < 0 ? 1 : -1;
+
+      // 雙層石砌柱礎底座
+      const baseBottom = new THREE.Mesh(new THREE.BoxGeometry(1.18, 0.28, 1.18), stoneBaseMat);
+      baseBottom.position.y = 0.14;
+      pg.add(baseBottom);
+      const baseTop = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.28, 0.96), stoneBaseMat);
+      baseTop.position.y = 0.42;
+      pg.add(baseTop);
+
+      // 雕花橡木鍛鐵主柱身
+      const shaft = new THREE.Mesh(new THREE.BoxGeometry(0.72, 5.1, 0.72), pillarWoodMat);
+      shaft.position.y = 3.1;
+      pg.add(shaft);
+
+      // 頂部雕花柱頭與四向斜撐木托架 (Corbels)
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.36, 1.08), oakDark);
+      cap.position.y = 5.65;
+      pg.add(cap);
+      [[0.55, 0, -0.55], [-0.55, 0, 0.55], [0, 0.55, 0.55], [0, -0.55, -0.55]].forEach(([cx, cz, tilt]) => {
+        const corbel = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.82, 0.24), oakTop);
+        corbel.position.set(cx, 5.15, cz);
+        if (cx !== 0) corbel.rotation.z = tilt;
+        else corbel.rotation.x = tilt;
+        pg.add(corbel);
+      });
+
+      // 紅金燕尾公會掛旗（垂掛於面向大廳中軸一側）
+      const bannerRod = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.88, 8), brassMat);
+      bannerRod.rotation.z = Math.PI / 2;
+      bannerRod.position.set(0, 4.35, 0.42);
+      pg.add(bannerRod);
+      const bannerMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.76, 1.5), bannerMat);
+      bannerMesh.position.set(0, 3.58, 0.41);
+      pg.add(bannerMesh);
+
+      // 鍛鐵彎臂＋懸掛式像素提燈＋柔和光暈
+      const armBar = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.08, 0.08), ironDarkMat);
+      armBar.position.set(inward * 0.62, 3.85, 0);
+      pg.add(armBar);
+      const armBrace = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.07, 0.07), ironDarkMat);
+      armBrace.position.set(inward * 0.5, 3.65, 0);
+      armBrace.rotation.z = inward * 0.68;
+      pg.add(armBrace);
+      const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.32, 6), ironDarkMat);
+      chain.position.set(inward * 0.9, 3.66, 0);
+      pg.add(chain);
+
+      const lanternCap = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.18, 6), ironDarkMat);
+      lanternCap.position.set(inward * 0.9, 3.48, 0);
+      pg.add(lanternCap);
+      const lanternGlass = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.15, 0.36, 6),
+        new THREE.MeshBasicMaterial({ color: 0xffe484 })
       );
-      lantern.position.set(px + (px < 0 ? 0.55 : -0.55), 3.3, pz);
-      scene.add(lantern);
-      const ll = new THREE.PointLight(0xffbe55, 1.25, 11);
-      ll.position.set(px + (px < 0 ? 0.7 : -0.7), 3.2, pz);
-      scene.add(ll);
+      lanternGlass.position.set(inward * 0.9, 3.22, 0);
+      pg.add(lanternGlass);
+      const lanternBot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.12, 0.1, 6), ironDarkMat);
+      lanternBot.position.set(inward * 0.9, 3.0, 0);
+      pg.add(lanternBot);
+
+      const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: haloTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      }));
+      halo.scale.set(1.85, 1.85, 1);
+      halo.position.set(inward * 0.9, 3.22, 0);
+      pg.add(halo);
+
+      const ll = new THREE.PointLight(0xffbe55, 1.45, 12.5);
+      ll.position.set(inward * 0.9, 3.15, 0);
+      pg.add(ll);
       lanternLights.push(ll);
     });
 
@@ -1223,7 +1625,16 @@
       p.scale.setScalar(Math.max(0.25, s));
     });
     lanternLights.forEach((ll, i) => {
-      ll.intensity = 1.2 + Math.sin(elapsed * 3.5 + i * 1.4) * 0.12;
+      ll.intensity = 1.35 + Math.sin(elapsed * 3.5 + i * 1.4) * 0.14;
+    });
+    chestSparkles.forEach(sp => {
+      const u = sp.userData;
+      sp.position.y = 0.95 + ((elapsed * u.speed + u.phase) % 1.15);
+      sp.position.x = u.baseX + Math.sin(elapsed * 2.5 + u.phase) * 0.12;
+      sp.rotation.y = elapsed * 3.0;
+    });
+    candleFlames.forEach((fl, i) => {
+      fl.scale.set(1, 0.85 + Math.sin(elapsed * 12 + i) * 0.22, 1);
     });
     if (osakaRing) osakaRing.rotation.z = elapsed * 0.7;
     if (futureRing) futureRing.rotation.z = -elapsed * 0.6;
