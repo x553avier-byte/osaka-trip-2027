@@ -454,6 +454,36 @@
       animation: pulse-sos 1.4s infinite;
     }
 
+    /* 隱形浮動虛擬搖桿（手指拖曳時於按壓處柔和浮現，放開自動隱藏） */
+    .floating-joy-base {
+      position: absolute;
+      width: 96px;
+      height: 96px;
+      margin-left: -48px;
+      margin-top: -48px;
+      border-radius: 50%;
+      background: rgba(252, 231, 184, 0.16);
+      border: 2.5px solid rgba(255, 224, 130, 0.55);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+      display: none;
+      z-index: 15;
+    }
+    .floating-joy-knob {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 40px;
+      height: 40px;
+      margin-left: -20px;
+      margin-top: -20px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 246, 209, 0.85), rgba(226, 150, 28, 0.72));
+      border: 2px solid rgba(59, 25, 8, 0.75);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      pointer-events: none;
+    }
+
     .adventure-portal-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -1535,13 +1565,18 @@
           <span id="tavern-online-badge" class="wood-badge">🟢 1 / 9 人在酒館</span>
         </h2>
 
-        <!-- Three.js 3D 寬敞酒館互動舞台（全點擊操作） -->
-        <div class="tavern-stage-shell">
+        <!-- Three.js 3D 寬敞酒館互動舞台（隱形搖桿拖曳 ＋ 點擊互動） -->
+        <div class="tavern-stage-shell" id="tavern-stage-shell">
           <div class="tavern-top-bar">
-            <div id="tavern-nearby-hint" class="tavern-hint-pill">👆 點地板走動 ｜ 點傳送門進入 ｜ 點家人送微笑 😊</div>
+            <div id="tavern-nearby-hint" class="tavern-hint-pill">🕹️ 拖曳滑動自由走 ｜ 點傳送門進入 ｜ 點家人微笑 😊</div>
           </div>
 
           <div id="tavern-canvas-wrap"></div>
+
+          <!-- 隱形浮動搖桿指示器 -->
+          <div id="floating-joy-base" class="floating-joy-base">
+            <div id="floating-joy-knob" class="floating-joy-knob"></div>
+          </div>
 
           <div class="tavern-overlay-controls">
             <button type="button" id="tavern-interact-btn" class="sdv-btn sdv-btn-gold">✨ 互動</button>

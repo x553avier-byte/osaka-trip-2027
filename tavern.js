@@ -113,6 +113,9 @@
   let lastSyncSent = 0;
 
   const keys = { up: false, down: false, left: false, right: false };
+  // 隱形浮動搖桿狀態
+  const joyVec = { x: 0, z: 0 };
+  let activePointer = null; // { id, startX, startY, dragging }
   let walkGoal = null; // { x, z, onArrive?: Function }
   let nearestTarget = null;
   let smileTexCache = null;
@@ -805,7 +808,7 @@
       hint.textContent = `✨ 附近：${best.title}`;
     } else {
       btn.style.display = "none";
-      hint.textContent = "👆 點地板走動 ｜ 點傳送門進入 ｜ 點家人送微笑 😊";
+      hint.textContent = "🕹️ 拖曳滑動自由走 ｜ 點傳送門進入 ｜ 點家人微笑 😊";
     }
   }
 
@@ -842,16 +845,25 @@
       targetMarker.scale.set(sc, sc, 1);
     }
 
-    // 2. 更新玩家操作移動（全點擊自動走動＋電腦鍵盤相容）
+    // 2. 更新玩家操作移動（隱形浮動搖桿拖曳 ＋ 電腦鍵盤 ＋ 點擊自動走動）
     const player = actorMap[currentPlayerId];
     if (player) {
       let dx = 0, dz = 0;
+      let speedScale = 1;
+
       if (keys.up) dz -= 1;
       if (keys.down) dz += 1;
       if (keys.left) dx -= 1;
       if (keys.right) dx += 1;
 
       if (dx !== 0 || dz !== 0) {
+        walkGoal = null;
+        if (targetMarker) targetMarker.visible = false;
+      } else if (Math.abs(joyVec.x) > 0.04 || Math.abs(joyVec.z) > 0.04) {
+        // 隱形浮動搖桿 360° 類比拖曳移動（拖得越遠走越快）
+        dx = joyVec.x;
+        dz = joyVec.z;
+        speedScale = Math.min(1, Math.hypot(dx, dz));
         walkGoal = null;
         if (targetMarker) targetMarker.visible = false;
       } else if (walkGoal) {
@@ -872,7 +884,7 @@
       const moving = (dx !== 0 || dz !== 0);
       if (moving) {
         const len = Math.hypot(dx, dz);
-        const speed = 5.0;
+        const speed = 5.0 * Math.max(0.35, speedScale);
         const stepX = (dx / len) * speed * dt;
         const stepZ = (dz / len) * speed * dt;
 
@@ -1030,13 +1042,27 @@
       });
     }
 
-    // 單指點擊（手機與電腦滑鼠都超順！）
-    canvasEl.addEventListener("pointerdown", e => {
+    // 隱形浮動搖桿（按住拖曳 = 虛擬手把；短點 = 互動／微笑／點地板走路）
+    const shell = document.getElementById("tavern-stage-shell");
+    const joyBase = document.getElementById("floating-joy-base");
+    const joyKnob = document.getElementById("floating-joy-knob");
+    const DRAG_THRESHOLD = 12;
+    const JOY_MAX_RADIUS = 44;
+
+    function hideJoystick() {
+      joyVec.x = 0;
+      joyVec.z = 0;
+      activePointer = null;
+      if (joyBase) joyBase.style.display = "none";
+      if (joyKnob) joyKnob.style.transform = "translate(0px, 0px)";
+    }
+
+    function handleTapAt(clientX, clientY) {
       if (!isActiveTab || !renderer || !camera || !floorMesh) return;
       const rect = canvasEl.getBoundingClientRect();
       const ndc = new THREE.Vector2(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        -((e.clientY - rect.top) / rect.height) * 2 + 1
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1
       );
       raycaster.setFromCamera(ndc, camera);
 
@@ -1045,7 +1071,6 @@
       if (objHits.length > 0) {
         const meta = objHits[0].object.userData;
         if (meta && meta.clickType === "member") {
-          // 點任何家人：頭上冒出 😊 微笑氣泡！（不切換角色）
           triggerSmileOnActor(meta.memberId);
           if (meta.memberId !== currentPlayerId) {
             const p = actorMap[currentPlayerId];
@@ -1086,6 +1111,64 @@
           targetMarker.visible = true;
         }
       }
+    }
+
+    canvasEl.addEventListener("pointerdown", e => {
+      if (!isActiveTab || activePointer) return;
+      e.preventDefault();
+      activePointer = {
+        id: e.pointerId,
+        startX: e.clientX,
+        startY: e.clientY,
+        dragging: false
+      };
+      try { canvasEl.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+
+    canvasEl.addEventListener("pointermove", e => {
+      if (!activePointer || e.pointerId !== activePointer.id) return;
+      const dx = e.clientX - activePointer.startX;
+      const dy = e.clientY - activePointer.startY;
+      const dist = Math.hypot(dx, dy);
+
+      if (!activePointer.dragging && dist > DRAG_THRESHOLD) {
+        activePointer.dragging = true;
+        if (joyBase && shell) {
+          const sRect = shell.getBoundingClientRect();
+          joyBase.style.left = `${activePointer.startX - sRect.left}px`;
+          joyBase.style.top = `${activePointer.startY - sRect.top}px`;
+          joyBase.style.display = "block";
+        }
+      }
+
+      if (activePointer.dragging) {
+        const clamped = Math.min(dist, JOY_MAX_RADIUS);
+        const angle = Math.atan2(dy, dx);
+        const kx = Math.cos(angle) * clamped;
+        const ky = Math.sin(angle) * clamped;
+
+        if (joyKnob) {
+          joyKnob.style.transform = `translate(${kx}px, ${ky}px)`;
+        }
+        joyVec.x = kx / JOY_MAX_RADIUS;
+        joyVec.z = ky / JOY_MAX_RADIUS;
+      }
+    });
+
+    canvasEl.addEventListener("pointerup", e => {
+      if (!activePointer || e.pointerId !== activePointer.id) return;
+      const wasDragging = activePointer.dragging;
+      try { canvasEl.releasePointerCapture(e.pointerId); } catch (_) {}
+      hideJoystick();
+      if (!wasDragging) {
+        handleTapAt(e.clientX, e.clientY);
+      }
+    });
+
+    canvasEl.addEventListener("pointercancel", e => {
+      if (!activePointer || e.pointerId !== activePointer.id) return;
+      try { canvasEl.releasePointerCapture(e.pointerId); } catch (_) {}
+      hideJoystick();
     });
   }
 
@@ -1175,6 +1258,11 @@
 
     setActive(active) {
       isActiveTab = !!active;
+      joyVec.x = 0;
+      joyVec.z = 0;
+      activePointer = null;
+      const jb = document.getElementById("floating-joy-base");
+      if (jb) jb.style.display = "none";
       if (active) {
         keys.up = keys.down = keys.left = keys.right = false;
         setTimeout(handleResize, 30);
