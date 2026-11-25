@@ -1556,9 +1556,9 @@
   <main class="container">
 
     <!-- =======================================================================
-         VIEW 0: THREE.JS ADVENTURE TAVERN (冒險者酒館交誼廳)
+         VIEW 0: THREE.JS ADVENTURE TAVERN (冒險者酒館交誼廳，放在最後一格)
          ======================================================================= -->
-    <section id="view-tavern" class="view-section active">
+    <section id="view-tavern" class="view-section">
       <div class="sdv-box">
         <h2 class="section-title">
           <span>🍺 家族冒險酒館交誼廳</span>
@@ -1621,9 +1621,9 @@
     </section>
 
     <!-- =======================================================================
-         VIEW 1: PARTY & CHARACTER SELECT (9 位家族小人＋個人檔案)
+         VIEW 1: PARTY & CHARACTER SELECT (預設第一頁：9 位家族小人＋個人檔案)
          ======================================================================= -->
-    <section id="view-party" class="view-section">
+    <section id="view-party" class="view-section active">
       <div class="sdv-box">
         <h2 class="section-title">
           <span>🌾 關西冒險小鎮廣場</span>
@@ -1972,32 +1972,32 @@
 
   </main>
 
-  <!-- Bottom Inventory Hotbar (6 Slots) -->
+  <!-- Bottom Inventory Hotbar (6 Slots: 個人隊伍在最前，酒館在最後) -->
   <nav class="bottom-nav">
     <div class="hotbar-inner">
-      <button class="nav-tab active" data-tab="tavern" onclick="switchTab('tavern')">
+      <button class="nav-tab active" data-tab="party" onclick="switchTab('party')">
         <span class="slot-num">1</span>
-        <span class="icon">🍺</span><span>酒館</span>
-      </button>
-      <button class="nav-tab" data-tab="party" onclick="switchTab('party')">
-        <span class="slot-num">2</span>
         <span class="icon">🧑‍🌾</span><span>隊伍</span>
       </button>
       <button class="nav-tab" data-tab="bag" onclick="switchTab('bag')">
-        <span class="slot-num">3</span>
+        <span class="slot-num">2</span>
         <span class="icon">🎒</span><span>行李</span>
       </button>
       <button class="nav-tab" data-tab="loot" onclick="switchTab('loot')">
-        <span class="slot-num">4</span>
+        <span class="slot-num">3</span>
         <span class="icon">🧰</span><span>寶箱</span>
       </button>
       <button class="nav-tab" data-tab="quest" onclick="switchTab('quest')">
-        <span class="slot-num">5</span>
+        <span class="slot-num">4</span>
         <span class="icon">📅</span><span>行程</span>
       </button>
       <button class="nav-tab" data-tab="guide" onclick="switchTab('guide')">
-        <span class="slot-num">6</span>
+        <span class="slot-num">5</span>
         <span class="icon">📜</span><span>退稅</span>
+      </button>
+      <button class="nav-tab" data-tab="tavern" onclick="switchTab('tavern')">
+        <span class="slot-num">6</span>
+        <span class="icon">🍺</span><span>酒館</span>
       </button>
     </div>
   </nav>
@@ -2311,7 +2311,7 @@
     // =========================================================================
     let currentMemberId = localStorage.getItem("osaka2027_current_member") || "yenting";
     if (!MEMBERS.some(m => m.id === currentMemberId)) currentMemberId = "yenting";
-    let currentTab = "tavern";
+    let currentTab = "party";
     let selectedDay = 1;
     let lootFilter = "all";
     let formLootStatus = "planned";
@@ -3808,6 +3808,9 @@
       if (targetTab) targetTab.classList.add("active");
 
       if (window.TavernEngine) {
+        if (tabName === "tavern" && !window.TavernEngine.isInitialized()) {
+          window.TavernEngine.init(MEMBERS, currentMemberId);
+        }
         window.TavernEngine.setActive(tabName === "tavern");
       }
       if (tabName === "sos") {
@@ -3840,12 +3843,9 @@
       if (e.key === "Enter") submitLootForm();
     });
 
-    // 初始化啟動
+    // 初始化啟動（預設顯示第一頁「隊伍／個人資訊」，進入酒館時再懶載入 Three.js 省電）
     initDefaultState();
     renderAll();
-    if (window.TavernEngine) {
-      window.TavernEngine.init(MEMBERS, currentMemberId);
-    }
     initFirebase();
   </script>
 </body>
