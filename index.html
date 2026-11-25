@@ -391,8 +391,8 @@
     .tavern-stage-shell {
       position: relative;
       width: 100%;
-      height: 410px;
-      background: #1f140e;
+      height: 470px;
+      background: #1c120c;
       border: 4px solid var(--wood-darkest);
       border-radius: 6px;
       overflow: hidden;
@@ -401,7 +401,7 @@
       touch-action: none;
     }
     @media (max-width: 520px) {
-      .tavern-stage-shell { height: 350px; }
+      .tavern-stage-shell { height: 430px; }
     }
 
     #tavern-canvas-wrap {
@@ -416,9 +416,8 @@
       left: 8px;
       right: 8px;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      gap: 6px;
       pointer-events: none;
       z-index: 10;
     }
@@ -428,94 +427,31 @@
       color: #fff2cc;
       border: 2px solid var(--wood-light);
       border-radius: 5px;
-      padding: 4px 10px;
+      padding: 4px 11px;
       font-size: 13.5px;
       font-weight: bold;
       max-width: 100%;
+      text-align: center;
     }
 
     .tavern-overlay-controls {
       position: absolute;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: flex-end;
       pointer-events: none;
       z-index: 12;
     }
 
-    .tavern-dpad {
-      display: grid;
-      grid-template-columns: repeat(3, 44px);
-      gap: 4px;
-      pointer-events: auto;
-      user-select: none;
-      touch-action: none;
-    }
-    .tavern-dpad button {
-      height: 42px;
-      font-size: 18px;
-      font-weight: bold;
-      background: rgba(248, 212, 147, 0.88);
-      color: var(--wood-darkest);
-      border: 2px solid var(--wood-darkest);
-      box-shadow: inset 1px 1px 0 #fff5d6, 0 2px 0 var(--wood-darkest);
-      border-radius: 5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      touch-action: none;
-    }
-    .tavern-dpad button:active {
-      background: #ffd45c;
-      transform: translateY(2px);
-    }
-    .tavern-dpad .empty { visibility: hidden; }
-
     #tavern-interact-btn {
       pointer-events: auto;
       display: none;
-      font-size: 16px;
-      padding: 10px 14px;
+      font-size: 16.5px;
+      padding: 10px 18px;
       animation: pulse-sos 1.4s infinite;
-    }
-
-    .tavern-member-strip {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      margin-bottom: 12px;
-    }
-    .tavern-char-pill {
-      background: var(--parchment-light);
-      border: 2px solid var(--parchment-border);
-      border-radius: 5px;
-      padding: 4px 9px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      white-space: nowrap;
-      font-family: 'DotGothic16', sans-serif;
-      font-size: 14.5px;
-      font-weight: bold;
-      color: var(--ink-title);
-      flex-shrink: 0;
-    }
-    .tavern-char-pill img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-      image-rendering: pixelated;
-    }
-    .tavern-char-pill.active {
-      background: #fff8db;
-      border-color: var(--crimson);
-      box-shadow: 0 0 0 2px var(--gold);
     }
 
     .adventure-portal-grid {
@@ -1599,26 +1535,15 @@
           <span id="tavern-online-badge" class="wood-badge">🟢 1 / 9 人在酒館</span>
         </h2>
 
-        <!-- 快速切換操控角色（9 位家族成員皆可逛酒館） -->
-        <div id="tavern-member-strip" class="tavern-member-strip"></div>
-
-        <!-- Three.js 3D 酒館互動舞台 -->
+        <!-- Three.js 3D 寬敞酒館互動舞台（全點擊操作） -->
         <div class="tavern-stage-shell">
           <div class="tavern-top-bar">
-            <div id="tavern-nearby-hint" class="tavern-hint-pill">🧭 方向鍵 / WASD / 十字鍵，或點酒館地板自由逛逛！</div>
+            <div id="tavern-nearby-hint" class="tavern-hint-pill">👆 點地板走動 ｜ 點傳送門進入 ｜ 點家人送微笑 😊</div>
           </div>
 
           <div id="tavern-canvas-wrap"></div>
 
           <div class="tavern-overlay-controls">
-            <div class="tavern-dpad" aria-label="四方向移動控制">
-              <div class="empty"></div>
-              <button type="button" data-dir="up">↑</button>
-              <div class="empty"></div>
-              <button type="button" data-dir="left">←</button>
-              <button type="button" data-dir="down">↓</button>
-              <button type="button" data-dir="right">→</button>
-            </div>
             <button type="button" id="tavern-interact-btn" class="sdv-btn sdv-btn-gold">✨ 互動</button>
           </div>
         </div>
@@ -2639,26 +2564,6 @@
       );
     };
 
-    window.openMemberTalkDialog = function (targetId) {
-      const target = getMember(targetId);
-      const online = isMemberOnline(targetId);
-      openTavernDialog(
-        `<span>💬 ${target.name}（${target.role}）</span>`,
-        `<div style="display:flex; gap:12px; align-items:center;">
-          <img src="${target.avatar}" alt="${target.name}" style="width:92px; height:92px; object-fit:cover; object-position:50% 20%; border:3px solid var(--wood-darkest); border-radius:5px; flex-shrink:0;" />
-          <div>
-            <div style="margin-bottom:6px;">
-              <span class="wood-badge ${target.inOsakaTrip ? '' : 'supporter'}">${target.inOsakaTrip ? '✈️ 大阪遠征團' : '🏠 台灣應援團'}</span>
-              <span class="presence-pill ${online ? 'online' : 'offline'}" style="margin-left:4px;"><span class="presence-dot"></span>${online ? '上線中' : '離線'}</span>
-            </div>
-            <div class="dialogue-speech" style="margin:0;">${target.quote}</div>
-          </div>
-        </div>`,
-        `<button class="sdv-btn sdv-btn-gold" onclick="closeTavernDialog(); selectMember('${target.id}')">🔄 切換操控 ${target.name}</button>
-         <button class="sdv-btn" onclick="closeTavernDialog()">繼續逛酒館</button>`
-      );
-    };
-
     // =========================================================================
     // 6. UI 渲染函式
     // =========================================================================
@@ -2688,22 +2593,9 @@
     }
 
     function renderTavernStrip() {
-      const strip = document.getElementById("tavern-member-strip");
-      if (!strip) return;
-      let onlineTotal = 0;
-      strip.innerHTML = MEMBERS.map(m => {
-        const online = isMemberOnline(m.id);
-        if (online) onlineTotal++;
-        const active = m.id === currentMemberId;
-        return `
-          <button type="button" class="tavern-char-pill ${active ? 'active' : ''}" onclick="selectMember('${m.id}')">
-            <img src="${m.sprite}" alt="${m.name}" />
-            <span>${m.name}</span>
-            <span class="presence-dot" style="background:${online ? '#2ab51d' : '#9c8a72'};"></span>
-          </button>
-        `;
-      }).join("");
-      document.getElementById("tavern-online-badge").textContent = `🟢 ${onlineTotal} / ${MEMBERS.length} 人在線`;
+      const onlineTotal = MEMBERS.filter(m => isMemberOnline(m.id)).length;
+      const badge = document.getElementById("tavern-online-badge");
+      if (badge) badge.textContent = `🟢 ${onlineTotal} / ${MEMBERS.length} 人在線`;
     }
 
     function renderParty() {
