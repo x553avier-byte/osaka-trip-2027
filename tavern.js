@@ -168,85 +168,272 @@
     return tex;
   }
 
-  // 半木結構＋拱形星空冬夜窗＋壁燈牆面貼圖
+  // 半木結構純淨牆面貼圖（不含窗戶，避免跟掛畫／壁爐／佈告欄重疊！）
   function createRichWallTexture() {
     return makePixelCanvasTexture(256, 128, (ctx, w, h) => {
-      // 上部溫暖奶油灰泥（含微粒質感）
-      ctx.fillStyle = "#ecd3a0";
+      // 上部溫暖奶油灰泥牆（細膩微粒光影）
+      ctx.fillStyle = "#ebd19f";
       ctx.fillRect(0, 0, w, 78);
-      for (let i = 0; i < 160; i++) {
-        ctx.fillStyle = i % 2 ? "rgba(180,126,64,0.12)" : "rgba(255,248,224,0.18)";
+      for (let i = 0; i < 200; i++) {
+        ctx.fillStyle = i % 2 ? "rgba(175,120,58,0.11)" : "rgba(255,248,224,0.18)";
         ctx.fillRect((i * 37) % w, (i * 19) % 76, 4, 3);
       }
 
-      // 橫向與垂直深橡木樑
-      ctx.fillStyle = "#5c2b0e";
-      ctx.fillRect(0, 0, w, 10);
-      ctx.fillStyle = "#8a481c";
-      ctx.fillRect(0, 2, w, 5);
-      // 垂直大樑
+      // 頂部橫向與垂直深橡木結構樑
+      ctx.fillStyle = "#4d2109";
+      ctx.fillRect(0, 0, w, 12);
+      ctx.fillStyle = "#85451a";
+      ctx.fillRect(0, 2, w, 6);
+      ctx.fillStyle = "#a85f2b";
+      ctx.fillRect(0, 2, w, 2);
+
+      // 垂直半木立柱＋斜木撐飾
       [0, 124, 244].forEach(bx => {
-        ctx.fillStyle = "#4d2109";
+        ctx.fillStyle = "#451d07";
         ctx.fillRect(bx, 0, 12, h);
-        ctx.fillStyle = "#7c3c14";
+        ctx.fillStyle = "#7a3b14";
         ctx.fillRect(bx + 2, 0, 7, h);
-        ctx.fillStyle = "#a15826";
+        ctx.fillStyle = "#9e5525";
         ctx.fillRect(bx + 3, 0, 2, h);
       });
 
-      // 拱形冬夜星空窗（左、右各一扇）
-      [34, 158].forEach(wx => {
-        ctx.fillStyle = "#4a2009";
-        ctx.fillRect(wx - 4, 20, 64, 52);
-        ctx.fillStyle = "#192d4f";
-        ctx.fillRect(wx, 24, 56, 44);
-        // 漸層夜空
-        ctx.fillStyle = "#244370";
-        ctx.fillRect(wx, 44, 56, 24);
-        // 像素星星與彎月
-        ctx.fillStyle = "#fff5b8";
-        ctx.fillRect(wx + 10, 30, 3, 3);
-        ctx.fillRect(wx + 42, 34, 2, 2);
-        ctx.fillRect(wx + 24, 42, 2, 2);
-        ctx.fillRect(wx + 45, 50, 3, 3);
-        ctx.fillStyle = "#ffe580";
-        ctx.fillRect(wx + 36, 28, 7, 7);
-        ctx.fillStyle = "#192d4f";
-        ctx.fillRect(wx + 39, 28, 5, 5);
-        // 窗格十字木條
-        ctx.fillStyle = "#6e3412";
-        ctx.fillRect(wx + 26, 24, 4, 44);
-        ctx.fillRect(wx, 44, 56, 4);
-        // 窗台
-        ctx.fillStyle = "#8c4a1d";
-        ctx.fillRect(wx - 6, 68, 68, 6);
-      });
+      // 中段橫木飾條
+      ctx.fillStyle = "#59280c";
+      ctx.fillRect(0, 72, w, 8);
+      ctx.fillStyle = "#9e5624";
+      ctx.fillRect(0, 74, w, 3);
 
-      // 中央暖光壁燈
-      ctx.fillStyle = "rgba(255, 204, 82, 0.25)";
-      ctx.beginPath(); ctx.arc(130, 36, 22, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#3e1c08";
-      ctx.fillRect(126, 28, 8, 14);
-      ctx.fillStyle = "#ffe47a";
-      ctx.fillRect(128, 30, 4, 9);
-
-      // 下部雕花橡木護牆板
+      // 下部雕花橡木護牆板 (Wainscoting)
       ctx.fillStyle = "#6b3311";
-      ctx.fillRect(0, 78, w, 50);
-      ctx.fillStyle = "#421b06";
-      ctx.fillRect(0, 76, w, 4);
-      ctx.fillStyle = "#b0652d";
-      ctx.fillRect(0, 80, w, 3);
+      ctx.fillRect(0, 80, w, 48);
       for (let x = 16; x < w - 12; x += 26) {
         if (Math.abs(x - 124) < 14) continue;
-        ctx.fillStyle = "#54250a";
+        ctx.fillStyle = "#4c2008";
         ctx.fillRect(x, 86, 20, 34);
         ctx.fillStyle = "#824119";
         ctx.fillRect(x + 2, 88, 16, 30);
-        ctx.fillStyle = "#995124";
+        ctx.fillStyle = "#9c5325";
         ctx.fillRect(x + 4, 90, 12, 26);
+        ctx.fillStyle = "#b56934";
+        ctx.fillRect(x + 4, 90, 12, 2);
       }
+      // 踢腳板
+      ctx.fillStyle = "#3e1906";
+      ctx.fillRect(0, 122, w, 6);
     }, 6, 1);
+  }
+
+  // 🪟 獨立冬夜星空拱窗高質感貼圖（僅裝在空白牆面，絕不撞畫！）
+  function createArchWindowTexture() {
+    return makePixelCanvasTexture(128, 160, (ctx, w, h) => {
+      ctx.fillStyle = "#3b1806";
+      ctx.fillRect(0, 0, w, h);
+      // 深橡木雕花外窗框
+      ctx.fillStyle = "#6e3613";
+      ctx.fillRect(4, 4, w - 8, h - 8);
+      ctx.fillStyle = "#965122";
+      ctx.fillRect(7, 7, w - 14, h - 14);
+      // 拱形冬夜星空玻璃
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(w / 2, 54, 46, Math.PI, 0);
+      ctx.lineTo(w - 18, h - 18);
+      ctx.lineTo(18, h - 18);
+      ctx.closePath();
+      ctx.clip();
+
+      const sky = ctx.createLinearGradient(0, 8, 0, h - 18);
+      sky.addColorStop(0, "#0e1d3b");
+      sky.addColorStop(0.55, "#1f3e6e");
+      sky.addColorStop(0.85, "#42709e");
+      sky.addColorStop(1, "#7ca8c9");
+      ctx.fillStyle = sky;
+      ctx.fillRect(14, 8, w - 28, h - 26);
+
+      // 發光彎月與星芒
+      ctx.fillStyle = "rgba(255, 240, 168, 0.25)";
+      ctx.beginPath(); ctx.arc(82, 42, 18, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#fff3b0";
+      ctx.beginPath(); ctx.arc(82, 42, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#142a52";
+      ctx.beginPath(); ctx.arc(87, 39, 9, 0, Math.PI * 2); ctx.fill();
+
+      // 閃爍像素星與飄雪
+      [[34, 34, 3], [56, 26, 2], [44, 58, 2], [96, 62, 3], [66, 70, 2], [38, 86, 2], [88, 92, 2]].forEach(([sx, sy, sz]) => {
+        ctx.fillStyle = "#fffce0";
+        ctx.fillRect(sx, sy, sz, sz);
+      });
+
+      // 遠方雪山與松林剪影
+      ctx.fillStyle = "#223b5e";
+      ctx.beginPath();
+      ctx.moveTo(14, 142); ctx.lineTo(44, 96); ctx.lineTo(74, 128);
+      ctx.lineTo(96, 102); ctx.lineTo(116, 142); ctx.closePath();
+      ctx.fill();
+      // 山頂積雪反光
+      ctx.fillStyle = "#dceeff";
+      ctx.beginPath(); ctx.moveTo(44, 96); ctx.lineTo(54, 108); ctx.lineTo(36, 108); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(96, 102); ctx.lineTo(104, 112); ctx.lineTo(89, 112); ctx.closePath(); ctx.fill();
+
+      // 窗框木格與窗台積雪
+      ctx.fillStyle = "#4d2109";
+      ctx.fillRect(w / 2 - 3, 8, 6, h - 24);
+      ctx.fillRect(14, 62, w - 28, 6);
+      ctx.fillRect(14, 104, w - 28, 6);
+      // 玻璃角落冰霜反光
+      ctx.fillStyle = "rgba(235, 248, 255, 0.72)";
+      ctx.fillRect(18, 134, w - 36, 8);
+      ctx.restore();
+
+      // 拱形外框描邊
+      ctx.strokeStyle = "#3b1806";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(w / 2, 54, 47, Math.PI, 0);
+      ctx.lineTo(w - 17, h - 17);
+      ctx.lineTo(17, h - 17);
+      ctx.closePath();
+      ctx.stroke();
+    });
+  }
+
+  // 📜 冒險公會委託佈告欄高精細軟木塞貼圖
+  function createQuestBoardTexture() {
+    return makePixelCanvasTexture(256, 160, (ctx, w, h) => {
+      // 軟木塞基底＋點狀木紋
+      ctx.fillStyle = "#c99255";
+      ctx.fillRect(0, 0, w, h);
+      for (let i = 0; i < 360; i++) {
+        ctx.fillStyle = i % 2 ? "#b87f42" : "#dba668";
+        ctx.fillRect((i * 41) % w, (i * 23) % h, 3, 2);
+      }
+      // 內陰影框
+      ctx.strokeStyle = "#7a471b";
+      ctx.lineWidth = 6;
+      ctx.strokeRect(3, 3, w - 6, h - 6);
+
+      // 繪製 6 張細節滿滿的委託海報（帶折角、文字線、紅蠟封、小插畫！）
+      function drawPoster(x, y, pw, ph, bg, accent, hasSketch) {
+        ctx.fillStyle = "rgba(55, 25, 6, 0.35)";
+        ctx.fillRect(x + 3, y + 3, pw, ph);
+        ctx.fillStyle = bg;
+        ctx.fillRect(x, y, pw, ph);
+        ctx.strokeStyle = "#9c6b3b";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(x, y, pw, ph);
+        // 頂部標題色條
+        ctx.fillStyle = accent;
+        ctx.fillRect(x + 4, y + 7, pw - 8, 6);
+        // 文字模擬條紋
+        ctx.fillStyle = "#5c3618";
+        for (let ly = y + 18; ly < y + ph - 12; ly += 6) {
+          ctx.fillRect(x + 5, ly, pw - 10 - ((ly * 7) % 10), 2);
+        }
+        if (hasSketch) {
+          ctx.fillStyle = "#c9382b";
+          ctx.beginPath(); ctx.arc(x + pw / 2, y + ph - 14, 7, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#ffe066";
+          ctx.fillRect(x + pw / 2 - 3, y + ph - 16, 6, 3);
+        }
+        // 金色圖釘
+        ctx.fillStyle = "#d92b2b";
+        ctx.beginPath(); ctx.arc(x + pw / 2, y + 3, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#ffe580";
+        ctx.fillRect(x + pw / 2 - 1, y + 2, 2, 2);
+      }
+
+      drawPoster(14, 14, 58, 66, "#fff6d8", "#c9382b", true);
+      drawPoster(82, 12, 74, 76, "#ffedc2", "#b87309", true);
+      drawPoster(168, 16, 72, 62, "#eaf7d5", "#3f8a1e", false);
+      drawPoster(22, 88, 66, 56, "#ffe4cc", "#3882b8", false);
+      drawPoster(100, 94, 62, 52, "#fff9e6", "#991b1b", false);
+      drawPoster(174, 86, 64, 58, "#e3f2fd", "#1d4e78", true);
+    });
+  }
+
+  // 🍻 雕花酒館吧檯正面護板與黃銅腳踏桿貼圖
+  function createBarFrontTexture() {
+    return makePixelCanvasTexture(256, 96, (ctx, w, h) => {
+      ctx.fillStyle = "#54260b";
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#7a3b14";
+      ctx.fillRect(0, 4, w, h - 14);
+      // 雕花木框格板
+      for (let x = 8; x < w - 12; x += 48) {
+        ctx.fillStyle = "#421b06";
+        ctx.fillRect(x, 12, 40, 62);
+        ctx.fillStyle = "#8f491c";
+        ctx.fillRect(x + 3, 15, 34, 56);
+        ctx.fillStyle = "#a65b28";
+        ctx.fillRect(x + 6, 18, 28, 50);
+        // 中心菱形雕飾
+        ctx.fillStyle = "#7a3b14";
+        ctx.beginPath();
+        ctx.moveTo(x + 20, 26); ctx.lineTo(x + 30, 43);
+        ctx.lineTo(x + 20, 60); ctx.lineTo(x + 10, 43);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#d99b26";
+        ctx.fillRect(x + 18, 41, 4, 4);
+      }
+      // 底部黃銅腳踏欄杆
+      ctx.fillStyle = "#361605";
+      ctx.fillRect(0, h - 14, w, 14);
+      ctx.fillStyle = "#d99b26";
+      ctx.fillRect(0, h - 10, w, 5);
+      ctx.fillStyle = "#fff0a8";
+      ctx.fillRect(0, h - 9, w, 2);
+    });
+  }
+
+  // 🛢️ 橡木鍛鐵酒桶貼圖
+  function createBarrelTexture() {
+    return makePixelCanvasTexture(64, 64, (ctx, w, h) => {
+      ctx.fillStyle = "#7a4019";
+      ctx.fillRect(0, 0, w, h);
+      for (let x = 0; x < w; x += 8) {
+        ctx.fillStyle = x % 16 === 0 ? "#8a4b20" : "#6e3714";
+        ctx.fillRect(x, 0, 7, h);
+        ctx.fillStyle = "#472008";
+        ctx.fillRect(x + 7, 0, 1, h);
+      }
+      // 兩道鍛鐵箍
+      [10, 46].forEach(hy => {
+        ctx.fillStyle = "#2b2522";
+        ctx.fillRect(0, hy, w, 8);
+        ctx.fillStyle = "#544a45";
+        ctx.fillRect(0, hy + 1, w, 2);
+        for (let rx = 6; rx < w; rx += 16) {
+          ctx.fillStyle = "#c9a255";
+          ctx.fillRect(rx, hy + 3, 3, 3);
+        }
+      });
+    });
+  }
+
+  // 🪵 精緻橡木長桌面（帶紅金桌巾！）貼圖
+  function createFeastTableTexture() {
+    return makePixelCanvasTexture(192, 128, (ctx, w, h) => {
+      ctx.fillStyle = "#5c2b0e";
+      ctx.fillRect(0, 0, w, h);
+      const planks = ["#9c5928", "#8c4d20", "#a6622e", "#82451b"];
+      for (let r = 0; r < 4; r++) {
+        ctx.fillStyle = planks[r];
+        ctx.fillRect(6, 6 + r * 29, w - 12, 27);
+        ctx.fillStyle = "rgba(255,224,178,0.16)";
+        ctx.fillRect(10, 9 + r * 29, w - 20, 4);
+      }
+      // 紅金繡邊桌巾 (Table runner)
+      ctx.fillStyle = "#8e1c24";
+      ctx.fillRect(w / 2 - 28, 2, 56, h - 4);
+      ctx.fillStyle = "#f2c14e";
+      ctx.fillRect(w / 2 - 24, 2, 4, h - 4);
+      ctx.fillRect(w / 2 + 20, 2, 4, h - 4);
+      ctx.fillStyle = "#ffd966";
+      ctx.beginPath();
+      ctx.moveTo(w / 2, h / 2 - 14); ctx.lineTo(w / 2 + 12, h / 2);
+      ctx.lineTo(w / 2, h / 2 + 14); ctx.lineTo(w / 2 - 12, h / 2);
+      ctx.closePath(); ctx.fill();
+    });
   }
 
   // 豪華紅金羅盤公會大地毯貼圖
@@ -779,6 +966,17 @@
   function buildTavernEnvironment() {
     const texLoader = new THREE.TextureLoader();
 
+    // 共用材質（供壁爐、拱窗、佈告欄、寶箱、吧檯、長桌、立柱與植栽統一質感）
+    const oakDark = new THREE.MeshStandardMaterial({ color: 0x5c2e12, roughness: 0.84 });
+    const oakTop = new THREE.MeshStandardMaterial({ color: 0xa6622b, roughness: 0.68 });
+    const brassMat = new THREE.MeshStandardMaterial({ color: 0xffcf40, emissive: 0x5c3800, roughness: 0.3, metalness: 0.45 });
+    const ironDarkMat = new THREE.MeshStandardMaterial({ color: 0x2d2724, roughness: 0.7, metalness: 0.5 });
+    const toriiRed = new THREE.MeshStandardMaterial({ color: 0xc92a22, roughness: 0.6 });
+    const toriiDark = new THREE.MeshStandardMaterial({ color: 0x26140d, roughness: 0.8 });
+    const stoneBaseTex = createStoneBaseTexture();
+    const stoneBaseMat = new THREE.MeshStandardMaterial({ map: stoneBaseTex, roughness: 0.92 });
+    const haloTex = createWarmHaloTexture();
+
     // 1. 地板：套用 AI 精繪的星露谷橡木地板貼圖 (textures/floor.jpg)
     const floorTex = texLoader.load("textures/floor.jpg");
     floorTex.wrapS = THREE.RepeatWrapping;
@@ -816,14 +1014,16 @@
     runner.position.set(9.2, 0.014, -6.2);
     scene.add(runner);
 
-    // 2. 四周高質感半木拱窗木牆
+    // 2. 四周高質感純淨半木護牆板木牆（無內嵌窗戶，避免跟掛畫／壁爐重疊！）
     const wallTex = createRichWallTexture();
     const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.88 });
     const backWall = new THREE.Mesh(new THREE.BoxGeometry(38.4, 6.2, 0.5), wallMat);
     backWall.position.set(0, 3.1, -12.4);
     scene.add(backWall);
 
-    const sideWallMat = new THREE.MeshStandardMaterial({ color: 0x693414, roughness: 0.92 });
+    const sideWallTex = createRichWallTexture();
+    sideWallTex.repeat.set(4, 1);
+    const sideWallMat = new THREE.MeshStandardMaterial({ map: sideWallTex, roughness: 0.9 });
     const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, 6.2, 26.4), sideWallMat);
     leftWall.position.set(-18.8, 3.1, 0.4);
     scene.add(leftWall);
@@ -832,60 +1032,264 @@
     rightWall.position.set(18.8, 3.1, 0.4);
     scene.add(rightWall);
 
-    // 3. 🔥 北牆正中央：Canva 精繪石砌大壁爐 (textures/fireplace.png)
-    const fpTex = texLoader.load("textures/fireplace.png");
-    fpTex.magFilter = THREE.NearestFilter;
-    fpTex.colorSpace = THREE.SRGBColorSpace;
-    const stoneSideMat = new THREE.MeshStandardMaterial({ color: 0x625d58, roughness: 0.94 });
-    const fpFrontMat = new THREE.MeshStandardMaterial({ map: fpTex, roughness: 0.88 });
-    const hearth = new THREE.Mesh(
-      new THREE.BoxGeometry(4.6, 4.4, 1.3),
-      [stoneSideMat, stoneSideMat, stoneSideMat, stoneSideMat, fpFrontMat, stoneSideMat]
-    );
-    hearth.position.set(0, 2.2, -11.5);
-    scene.add(hearth);
+    // 🪟 獨立 3D 冬夜星空拱窗（只裝在純空白牆面，掛畫後方絕無窗戶！）
+    const archWinTex = createArchWindowTexture();
+    const archWinMat = new THREE.MeshBasicMaterial({ map: archWinTex });
+    const snowTrimMat = new THREE.MeshStandardMaterial({ color: 0xe6f4ff, roughness: 0.7 });
 
-    const chimney = new THREE.Mesh(
-      new THREE.BoxGeometry(2.6, 1.9, 1.1),
-      stoneSideMat
-    );
-    chimney.position.set(0, 5.25, -11.6);
-    scene.add(chimney);
+    function addArchWindow(wx, wy, wz, rotY) {
+      const wg = new THREE.Group();
+      wg.position.set(wx, wy, wz);
+      wg.rotation.y = rotY;
+      scene.add(wg);
 
-    // 北牆大合照金框畫廊（懸掛在壁爐右側，不遮擋壁爐造型！）
+      // 厚實雕花橡木窗外框
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(2.38, 2.86, 0.24), oakDark);
+      wg.add(frame);
+
+      // 發光冬夜星空玻璃面
+      const glass = new THREE.Mesh(new THREE.PlaneGeometry(2.08, 2.58), archWinMat);
+      glass.position.z = 0.135;
+      wg.add(glass);
+
+      // 立體木窗台＋微積雪霜飾條＋托架
+      const sill = new THREE.Mesh(new THREE.BoxGeometry(2.68, 0.18, 0.42), oakTop);
+      sill.position.set(0, -1.48, 0.14);
+      wg.add(sill);
+      const sillSnow = new THREE.Mesh(new THREE.BoxGeometry(2.44, 0.05, 0.16), snowTrimMat);
+      sillSnow.position.set(0, -1.37, 0.24);
+      wg.add(sillSnow);
+
+      // 頂部雕花窗楣與左右木托架
+      const lintel = new THREE.Mesh(new THREE.BoxGeometry(2.64, 0.22, 0.34), oakDark);
+      lintel.position.set(0, 1.48, 0.08);
+      wg.add(lintel);
+      [-1.08, 1.08].forEach(cx => {
+        const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.36, 0.28), oakDark);
+        bracket.position.set(cx, -1.68, 0.08);
+        wg.add(bracket);
+      });
+
+      // 柔和冬夜藍白月光映照
+      const moonLight = new THREE.PointLight(0x8ec5ff, 0.65, 7.2);
+      moonLight.position.set(0, 0.15, 0.85);
+      wg.add(moonLight);
+    }
+
+    // 4 扇獨立冬夜拱窗：北牆最左空位、北牆最右空位、東牆南北兩側空位（掛畫 x=4.5 後方完全乾淨！）
+    addArchWindow(-13.4, 3.4, -12.06, 0);
+    addArchWindow(14.8, 3.4, -12.06, 0);
+    addArchWindow(18.46, 3.4, -6.8, -Math.PI / 2);
+    addArchWindow(18.46, 3.4, 5.6, -Math.PI / 2);
+
+    // 3. 🔥 北牆正中央：深凹 3D 石砌雕花大壁爐套件（石砌壁爐柱＋石拱門＋立體柴薪火塘＋橡木壁爐台＋銅壺提燈！）
+    const fpGroup = new THREE.Group();
+    fpGroup.position.set(0, 0, -11.5);
+    scene.add(fpGroup);
+
+    const hearthDarkStone = new THREE.MeshStandardMaterial({ color: 0x3b3633, roughness: 0.95 });
+    const sootInteriorMat = new THREE.MeshStandardMaterial({ color: 0x1e1714, roughness: 0.98 });
+    const copperMat = new THREE.MeshStandardMaterial({ color: 0xd4713b, roughness: 0.32, metalness: 0.58 });
+    const barkMat = new THREE.MeshStandardMaterial({ color: 0x4d2610, roughness: 0.92 });
+    const emberMat = new THREE.MeshBasicMaterial({ color: 0xff5a1f });
+
+    // 突出的石板火塘地台 (Flagstone apron)
+    const fpApron = new THREE.Mesh(new THREE.BoxGeometry(5.1, 0.26, 2.05), stoneBaseMat);
+    fpApron.position.set(0, 0.13, 0.25);
+    fpGroup.add(fpApron);
+    const fpApronRim = new THREE.Mesh(new THREE.BoxGeometry(4.92, 0.08, 1.88), hearthDarkStone);
+    fpApronRim.position.set(0, 0.28, 0.22);
+    fpGroup.add(fpApronRim);
+
+    // 左右厚實石砌壁爐墩柱
+    [-1.68, 1.68].forEach(px => {
+      const pier = new THREE.Mesh(new THREE.BoxGeometry(1.26, 2.48, 1.48), stoneBaseMat);
+      pier.position.set(px, 1.48, 0);
+      fpGroup.add(pier);
+      const pierCap = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.18, 1.56), hearthDarkStone);
+      pierCap.position.set(px, 2.62, 0.02);
+      fpGroup.add(pierCap);
+    });
+
+    // 深凹火膛背牆與側壁＋炙熱炭火床
+    const fpBack = new THREE.Mesh(new THREE.BoxGeometry(2.35, 2.25, 0.3), sootInteriorMat);
+    fpBack.position.set(0, 1.38, -0.52);
+    fpGroup.add(fpBack);
+    const emberBed = new THREE.Mesh(new THREE.BoxGeometry(1.96, 0.14, 0.92), emberMat);
+    emberBed.position.set(0, 0.34, 0.05);
+    fpGroup.add(emberBed);
+
+    // 石砌橫樑拱門與中央突出拱心石 (Keystone)
+    const fpLintel = new THREE.Mesh(new THREE.BoxGeometry(4.72, 0.56, 1.52), stoneBaseMat);
+    fpLintel.position.set(0, 2.46, 0.02);
+    fpGroup.add(fpLintel);
+    const keystone = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.66, 1.62), hearthDarkStone);
+    keystone.position.set(0, 2.48, 0.06);
+    fpGroup.add(keystone);
+
+    // 鍛鐵薪架與立體交叉橡木柴薪
+    [-0.68, 0.68].forEach(ax => {
+      const andiron = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.44, 0.72), ironDarkMat);
+      andiron.position.set(ax, 0.46, 0.16);
+      fpGroup.add(andiron);
+      const finial = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), brassMat);
+      finial.position.set(ax, 0.74, 0.48);
+      fpGroup.add(finial);
+    });
+    const grateBar = new THREE.Mesh(new THREE.BoxGeometry(1.56, 0.08, 0.58), ironDarkMat);
+    grateBar.position.set(0, 0.44, 0.12);
+    fpGroup.add(grateBar);
+
+    [[-0.22, 0.54, 0.16, 0.25], [0.22, 0.54, 0.1, -0.28], [0, 0.64, 0.06, 0.05]].forEach(([lx, ly, lz, ry]) => {
+      const log = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.14, 1.32, 8), barkMat);
+      log.rotation.z = Math.PI / 2;
+      log.rotation.y = ry;
+      log.position.set(lx, ly, lz);
+      fpGroup.add(log);
+    });
+
+    // 厚重雕花橡木壁爐台 (Mantelpiece) ＋ 三支斜撐木托架
+    const mantelBody = new THREE.Mesh(new THREE.BoxGeometry(5.18, 0.26, 1.72), oakDark);
+    mantelBody.position.set(0, 2.86, 0.08);
+    fpGroup.add(mantelBody);
+    const mantelTop = new THREE.Mesh(new THREE.BoxGeometry(5.3, 0.1, 1.8), oakTop);
+    mantelTop.position.set(0, 3.04, 0.1);
+    fpGroup.add(mantelTop);
+    [-1.7, 0, 1.7].forEach(cx => {
+      const corbel = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.32, 0.36), oakDark);
+      corbel.position.set(cx, 2.66, 0.76);
+      fpGroup.add(corbel);
+    });
+
+    // 漸收式石砌大煙囪＋家族紅金徽章盾牌＋雙劍裝飾＋乾燥薰衣草束
+    const chimneyLow = new THREE.Mesh(new THREE.BoxGeometry(3.45, 1.48, 1.28), stoneBaseMat);
+    chimneyLow.position.set(0, 3.82, -0.06);
+    fpGroup.add(chimneyLow);
+    const chimneyHigh = new THREE.Mesh(new THREE.BoxGeometry(2.65, 1.72, 1.12), stoneBaseMat);
+    chimneyHigh.position.set(0, 5.36, -0.1);
+    fpGroup.add(chimneyHigh);
+    const chimneyBeam = new THREE.Mesh(new THREE.BoxGeometry(3.58, 0.2, 1.38), oakDark);
+    chimneyBeam.position.set(0, 4.56, -0.04);
+    fpGroup.add(chimneyBeam);
+
+    // 煙囪中央家族公會紋章盾牌
+    const shieldRim = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.45, 0.14, 6), brassMat);
+    shieldRim.rotation.x = Math.PI / 2;
+    shieldRim.position.set(0, 3.85, 0.6);
+    fpGroup.add(shieldRim);
+    const shieldCore = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.36, 0.16, 6), toriiRed);
+    shieldCore.rotation.x = Math.PI / 2;
+    shieldCore.position.set(0, 3.85, 0.62);
+    fpGroup.add(shieldCore);
+    const shieldStar = new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), brassMat);
+    shieldStar.position.set(0, 3.85, 0.72);
+    fpGroup.add(shieldStar);
+
+    // 煙囪左右懸掛乾燥香草與薰衣草束
+    [-1.22, 1.22].forEach(hx => {
+      const herbStem = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.56, 6), new THREE.MeshStandardMaterial({ color: 0x4f7a3c, roughness: 0.9 }));
+      herbStem.rotation.z = Math.PI;
+      herbStem.position.set(hx, 3.82, 0.64);
+      fpGroup.add(herbStem);
+      const lavender = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.32, 6), new THREE.MeshStandardMaterial({ color: 0x9b6bd4, roughness: 0.9 }));
+      lavender.rotation.z = Math.PI;
+      lavender.position.set(hx, 3.58, 0.66);
+      fpGroup.add(lavender);
+    });
+
+    // 壁爐台上溫馨小擺件：左側像素提燈、銅製茶壺、右側精裝冒險書與搖曳蠟燭
+    const mLanternBase = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.08, 6), ironDarkMat);
+    mLanternBase.position.set(-1.85, 3.13, 0.48);
+    fpGroup.add(mLanternBase);
+    const mLanternGlass = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.34, 6), new THREE.MeshBasicMaterial({ color: 0xffe484 }));
+    mLanternGlass.position.set(-1.85, 3.34, 0.48);
+    fpGroup.add(mLanternGlass);
+    const mLanternCap = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.18, 6), ironDarkMat);
+    mLanternCap.position.set(-1.85, 3.58, 0.48);
+    fpGroup.add(mLanternCap);
+
+    const kettleBody = new THREE.Mesh(new THREE.SphereGeometry(0.24, 10, 8), copperMat);
+    kettleBody.scale.set(1.1, 0.85, 1.1);
+    kettleBody.position.set(-0.95, 3.28, 0.52);
+    fpGroup.add(kettleBody);
+    const kettleLid = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 0.08, 8), brassMat);
+    kettleLid.position.set(-0.95, 3.48, 0.52);
+    fpGroup.add(kettleLid);
+
+    // 右側冒險精裝書疊＋搖曳蠟燭
+    const book1 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.12, 0.38), toriiRed);
+    book1.position.set(1.22, 3.15, 0.48);
+    book1.rotation.y = 0.12;
+    fpGroup.add(book1);
+    const book2 = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.11, 0.34), new THREE.MeshStandardMaterial({ color: 0x245435, roughness: 0.8 }));
+    book2.position.set(1.24, 3.26, 0.48);
+    book2.rotation.y = -0.18;
+    fpGroup.add(book2);
+
+    const mCandleHolder = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.18, 0.06, 8), brassMat);
+    mCandleHolder.position.set(1.92, 3.12, 0.5);
+    fpGroup.add(mCandleHolder);
+    const mCandleWax = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.075, 0.34, 8), new THREE.MeshStandardMaterial({ color: 0xfff5db }));
+    mCandleWax.position.set(1.92, 3.32, 0.5);
+    fpGroup.add(mCandleWax);
+    const mCandleFlame = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.16, 6), new THREE.MeshBasicMaterial({ color: 0xffd24d }));
+    mCandleFlame.position.set(1.92, 3.55, 0.5);
+    fpGroup.add(mCandleFlame);
+    candleFlames.push(mCandleFlame);
+
+    // 壁爐右側牆邊整齊堆疊的備用橡木柴薪架
+    [[2.55, 0.16], [2.85, 0.16], [2.7, 0.38], [2.58, 0.6], [2.82, 0.6]].forEach(([sx, sy]) => {
+      const stackLog = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.82, 7), barkMat);
+      stackLog.rotation.x = Math.PI / 2;
+      stackLog.position.set(sx, sy, 0.05);
+      fpGroup.add(stackLog);
+    });
+
+    // 北牆大合照金框畫廊（獨立於純淨木牆上，背後絕無窗戶，並加裝美術館級黃銅畫燈！）
     const groupPhotoTex = texLoader.load("avatars/day1_group.jpg");
     groupPhotoTex.colorSpace = THREE.SRGBColorSpace;
-    const frameBox = new THREE.Mesh(
-      new THREE.BoxGeometry(3.6, 2.15, 0.16),
-      new THREE.MeshStandardMaterial({ color: 0xd99b26, roughness: 0.42, metalness: 0.25 })
-    );
-    frameBox.position.set(4.5, 3.6, -12.08);
+    const outerGalleryFrame = new THREE.Mesh(new THREE.BoxGeometry(3.86, 2.38, 0.14), oakDark);
+    outerGalleryFrame.position.set(4.5, 3.6, -12.11);
+    scene.add(outerGalleryFrame);
+    const frameBox = new THREE.Mesh(new THREE.BoxGeometry(3.62, 2.16, 0.18), brassMat);
+    frameBox.position.set(4.5, 3.6, -12.06);
     scene.add(frameBox);
-
     const photoPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.3, 1.84),
+      new THREE.PlaneGeometry(3.32, 1.86),
       new THREE.MeshBasicMaterial({ map: groupPhotoTex })
     );
-    photoPlane.position.set(4.5, 3.6, -11.98);
+    photoPlane.position.set(4.5, 3.6, -11.96);
     scene.add(photoPlane);
 
-    // 火焰發光粒子
-    const flameColors = [0xff5500, 0xff9900, 0xffdd33];
-    for (let i = 0; i < 12; i++) {
+    // 畫框上方黃銅畫廊壁燈
+    const picLampBar = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 1.45, 8), brassMat);
+    picLampBar.rotation.z = Math.PI / 2;
+    picLampBar.position.set(4.5, 4.92, -11.65);
+    scene.add(picLampBar);
+    const picLampArm = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.48), brassMat);
+    picLampArm.position.set(4.5, 4.92, -11.92);
+    scene.add(picLampArm);
+    const picLight = new THREE.PointLight(0xffe0a3, 1.0, 6.5);
+    picLight.position.set(4.5, 4.65, -11.2);
+    scene.add(picLight);
+
+    // 壁爐深凹火膛內的跳動火焰與火星粒子
+    const flameColors = [0xff4500, 0xff8800, 0xffd633, 0xfff099];
+    for (let i = 0; i < 16; i++) {
       const p = new THREE.Mesh(
-        new THREE.BoxGeometry(0.3, 0.34, 0.3),
+        new THREE.BoxGeometry(0.28, 0.34, 0.28),
         new THREE.MeshBasicMaterial({ color: flameColors[i % flameColors.length] })
       );
-      p.position.set((Math.random() - 0.5) * 1.4, 0.45 + Math.random() * 0.85, -10.75);
-      p.userData = { baseX: p.position.x, phase: Math.random() * Math.PI * 2, speed: 2.2 + Math.random() * 2.2 };
+      p.position.set((Math.random() - 0.5) * 1.45, 0.45 + Math.random() * 0.9, -11.35 + (Math.random() - 0.5) * 0.3);
+      p.userData = { baseX: p.position.x, phase: Math.random() * Math.PI * 2, speed: 2.3 + Math.random() * 2.2 };
       scene.add(p);
       fireParticles.push(p);
     }
-    fireLight = new THREE.PointLight(0xff842c, 3.8, 20);
-    fireLight.position.set(0, 1.8, -9.6);
+    fireLight = new THREE.PointLight(0xff842c, 3.8, 21);
+    fireLight.position.set(0, 1.65, -9.8);
     scene.add(fireLight);
 
-    // 4. 📚 壁爐左側高大冒險書櫃（右側改為大合照金框畫廊）
+    // 4. 📚 壁爐左側高大冒險書櫃
     const shelfTex = createBookshelfTexture();
     const shelfMat = new THREE.MeshStandardMaterial({ map: shelfTex, roughness: 0.88 });
     [-3.2].forEach(bx => {
@@ -894,37 +1298,97 @@
       scene.add(shelf);
     });
 
-    // 5. 📜 公會情報佈告欄（北牆偏左）
-    const boardFrame = new THREE.Mesh(
-      new THREE.BoxGeometry(3.3, 2.2, 0.22),
-      new THREE.MeshStandardMaterial({ color: 0x5c2b0e, roughness: 0.85 })
-    );
-    boardFrame.position.set(-5.8, 2.4, -12.05);
-    boardFrame.userData = { clickType: "interactable", targetId: "board-guild" };
-    clickableMeshes.push(boardFrame);
-    scene.add(boardFrame);
+    // 5. 📜 3D 木屋簷公會情報佈告欄套件（雙木支柱＋斜坡瓦片屋簷＋高精細委託海報＋黃銅照燈！）
+    const boardGroup = new THREE.Group();
+    boardGroup.position.set(-5.8, 0, -11.92);
+    scene.add(boardGroup);
 
-    const cork = new THREE.Mesh(
-      new THREE.BoxGeometry(2.9, 1.8, 0.24),
-      new THREE.MeshStandardMaterial({ color: 0xd4a46a, roughness: 0.95 })
-    );
-    cork.position.set(-5.8, 2.4, -12.04);
-    cork.userData = { clickType: "interactable", targetId: "board-guild" };
-    clickableMeshes.push(cork);
-    scene.add(cork);
-
-    const noteColors = [0xfff6d6, 0xffe4b3, 0xd8f5c4, 0xffd6cc, 0xd9f0ff];
-    [[-6.5, 2.75], [-5.8, 2.65], [-5.0, 2.72], [-6.2, 2.02], [-5.3, 2.05]].forEach((pos, idx) => {
-      const note = new THREE.Mesh(
-        new THREE.BoxGeometry(0.54, 0.48, 0.05),
-        new THREE.MeshStandardMaterial({ color: noteColors[idx % noteColors.length] })
-      );
-      note.position.set(pos[0], pos[1], -11.88);
-      scene.add(note);
+    // 左右落地橡木立柱＋石磚腳座
+    [-1.72, 1.72].forEach(px => {
+      const bFoot = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.26, 0.38), stoneBaseMat);
+      bFoot.position.set(px, 0.13, 0);
+      boardGroup.add(bFoot);
+      const bPost = new THREE.Mesh(new THREE.BoxGeometry(0.22, 3.55, 0.22), oakDark);
+      bPost.position.set(px, 1.85, 0);
+      boardGroup.add(bPost);
     });
 
+    // 雕花木框＋黃銅護角
+    const boardFrame = new THREE.Mesh(new THREE.BoxGeometry(3.62, 2.32, 0.24), oakDark);
+    boardFrame.position.set(0, 2.32, 0.02);
+    boardFrame.userData = { clickType: "interactable", targetId: "board-guild" };
+    clickableMeshes.push(boardFrame);
+    boardGroup.add(boardFrame);
+
+    [[-1.72, 3.38], [1.72, 3.38], [-1.72, 1.26], [1.72, 1.26]].forEach(([bx, by]) => {
+      const corner = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.26, 0.28), brassMat);
+      corner.position.set(bx, by, 0.04);
+      boardGroup.add(corner);
+    });
+
+    // 高細節軟木塞委託海報板面
+    const questBoardTex = createQuestBoardTexture();
+    const cork = new THREE.Mesh(
+      new THREE.BoxGeometry(3.22, 1.94, 0.12),
+      new THREE.MeshStandardMaterial({ map: questBoardTex, roughness: 0.92 })
+    );
+    cork.position.set(0, 2.32, 0.12);
+    cork.userData = { clickType: "interactable", targetId: "board-guild" };
+    clickableMeshes.push(cork);
+    boardGroup.add(cork);
+
+    // 3D 立體微翹羊皮紙懸賞單＋紅蠟封印
+    [[-0.95, 2.68, 0.06, 0xfff6d6], [0.02, 2.62, -0.04, 0xffedc2], [0.96, 2.65, 0.05, 0xebf7d8], [-0.45, 1.82, -0.05, 0xffe4cc], [0.58, 1.85, 0.04, 0xe3f2fd]].forEach(([nx, ny, rot, col]) => {
+      const poster = new THREE.Mesh(
+        new THREE.BoxGeometry(0.68, 0.62, 0.03),
+        new THREE.MeshStandardMaterial({ color: col, roughness: 0.88 })
+      );
+      poster.position.set(nx, ny, 0.2);
+      poster.rotation.z = rot;
+      poster.userData = { clickType: "interactable", targetId: "board-guild" };
+      clickableMeshes.push(poster);
+      boardGroup.add(poster);
+
+      const seal = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.025, 8), toriiRed);
+      seal.rotation.x = Math.PI / 2;
+      seal.position.set(nx, ny + 0.24, 0.22);
+      boardGroup.add(seal);
+    });
+
+    // 斜坡木瓦遮雨屋簷＋脊樑
+    const shingleMat = new THREE.MeshStandardMaterial({ color: 0x6e3112, roughness: 0.86 });
+    const awning = new THREE.Mesh(new THREE.BoxGeometry(4.05, 0.16, 0.96), shingleMat);
+    awning.position.set(0, 3.68, 0.22);
+    awning.rotation.x = 0.32;
+    boardGroup.add(awning);
+    const awningRidge = new THREE.Mesh(new THREE.BoxGeometry(4.14, 0.14, 0.24), oakDark);
+    awningRidge.position.set(0, 3.84, -0.14);
+    boardGroup.add(awningRidge);
+
+    // 屋簷下黃銅照明小燈＋暖光光暈
+    const bLampCap = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.14, 8), brassMat);
+    bLampCap.position.set(0, 3.52, 0.48);
+    boardGroup.add(bLampCap);
+    const bLampBulb = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffe896 }));
+    bLampBulb.position.set(0, 3.42, 0.48);
+    boardGroup.add(bLampBulb);
+    const bLampHalo = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: haloTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+    }));
+    bLampHalo.scale.set(1.25, 1.25, 1);
+    bLampHalo.position.set(0, 3.42, 0.5);
+    boardGroup.add(bLampHalo);
+    const boardLight = new THREE.PointLight(0xffcf70, 1.0, 6.2);
+    boardLight.position.set(0, 3.25, 0.72);
+    boardGroup.add(boardLight);
+
+    // 佈告欄下方置物木條（放著小卷軸）
+    const boardLedge = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.12, 0.34), oakTop);
+    boardLedge.position.set(0, 1.12, 0.16);
+    boardGroup.add(boardLedge);
+
     const boardSign = createSignSprite("📜 公會情報佈告欄", "#5c2b0e", "#e8b45a");
-    boardSign.position.set(-5.8, 4.15, -11.6);
+    boardSign.position.set(-5.8, 4.45, -11.5);
     boardSign.userData = { clickType: "interactable", targetId: "board-guild" };
     clickableMeshes.push(boardSign);
     scene.add(boardSign);
@@ -945,8 +1409,6 @@
 
     const chestWoodTex = createChestWoodTexture();
     const chestWoodMat = new THREE.MeshStandardMaterial({ map: chestWoodTex, roughness: 0.65 });
-    const brassMat = new THREE.MeshStandardMaterial({ color: 0xffcf40, emissive: 0x5c3800, roughness: 0.3, metalness: 0.45 });
-    const ironDarkMat = new THREE.MeshStandardMaterial({ color: 0x2d2724, roughness: 0.7, metalness: 0.5 });
 
     // 寶箱木質基座＋四個鍍金護角
     const chestBase = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.78, 1.08), chestWoodMat);
@@ -1029,8 +1491,6 @@
     scene.add(chestSign);
 
     // 7. 🏯「2027 大阪關西冒險」鳥居傳送門（北牆右側＋大阪城暮光主視覺）
-    const toriiRed = new THREE.MeshStandardMaterial({ color: 0xc92a22, roughness: 0.6 });
-    const toriiDark = new THREE.MeshStandardMaterial({ color: 0x26140d, roughness: 0.8 });
     const goldMat = new THREE.MeshStandardMaterial({ color: 0xffc83d, emissive: 0x6b4300, roughness: 0.35 });
 
     const leftPillar = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.25, 4.1, 10), toriiRed);
@@ -1128,52 +1588,181 @@
     clickableMeshes.push(futureSign);
     scene.add(futureSign);
 
-    // 9. 🍻 西側豪華酒館大吧檯 ＋ 魔藥酒瓶展示壁架 ＋ 橡木桶
-    const oakDark = new THREE.MeshStandardMaterial({ color: 0x5c2e12, roughness: 0.85 });
-    const oakTop = new THREE.MeshStandardMaterial({ color: 0xa6622b, roughness: 0.7 });
+    // 9. 🍻 西側 3D 雕花橡木酒館大吧檯套件（雕花護板＋黃銅腳踏桿＋啤酒拉霸塔＋泡沫啤酒杯＋魔藥瓶＋鐵箍橡木酒桶＋三盞琥珀吊燈！）
+    const barGroup = new THREE.Group();
+    barGroup.position.set(-14.2, 0, -0.5);
+    scene.add(barGroup);
 
-    const barBody = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.2, 9.8), oakDark);
-    barBody.position.set(-14.2, 0.6, -0.5);
+    const barFrontTex = createBarFrontTexture();
+    barFrontTex.wrapS = THREE.RepeatWrapping;
+    barFrontTex.repeat.set(3, 1);
+    const barFrontMat = new THREE.MeshStandardMaterial({ map: barFrontTex, roughness: 0.78 });
+
+    const barBody = new THREE.Mesh(
+      new THREE.BoxGeometry(1.88, 1.24, 9.8),
+      [barFrontMat, oakDark, oakDark, oakDark, oakDark, oakDark]
+    );
+    barBody.position.y = 0.62;
     barBody.userData = { clickType: "interactable", targetId: "tavern-bar" };
     clickableMeshes.push(barBody);
-    scene.add(barBody);
+    barGroup.add(barBody);
 
-    const barTop = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.2, 10.1), oakTop);
-    barTop.position.set(-14.2, 1.3, -0.5);
+    // 雙層厚實橡木吧檯桌面＋黃銅護角
+    const barMolding = new THREE.Mesh(new THREE.BoxGeometry(2.14, 0.12, 10.0), oakDark);
+    barMolding.position.y = 1.24;
+    barGroup.add(barMolding);
+
+    const barTop = new THREE.Mesh(new THREE.BoxGeometry(2.32, 0.16, 10.22), oakTop);
+    barTop.position.y = 1.36;
     barTop.userData = { clickType: "interactable", targetId: "tavern-bar" };
     clickableMeshes.push(barTop);
-    scene.add(barTop);
+    barGroup.add(barTop);
 
-    // 吧檯後方魔藥瓶壁架（套用 Canva 精繪像素酒櫃貼圖 textures/bar_shelf.png，面向大廳 +X 面）
+    [[-1.08, -5.02], [1.08, -5.02], [-1.08, 5.02], [1.08, 5.02]].forEach(([bx, bz]) => {
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.2, 0.24), brassMat);
+      cap.position.set(bx, 1.36, bz);
+      barGroup.add(cap);
+    });
+
+    // 吧檯正面 3D 黃銅腳踏欄杆與固定支撐架
+    const footRail = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 9.5, 8), brassMat);
+    footRail.rotation.x = Math.PI / 2;
+    footRail.position.set(1.12, 0.18, 0);
+    barGroup.add(footRail);
+    [-4.2, -2.1, 0, 2.1, 4.2].forEach(fz => {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.06, 0.07), brassMat);
+      post.position.set(1.02, 0.18, fz);
+      barGroup.add(post);
+      const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.045, 0.18, 6), brassMat);
+      foot.position.set(1.12, 0.09, fz);
+      barGroup.add(foot);
+    });
+
+    // 3D 黃銅三管精釀啤酒拉霸塔 (Draft Beer Tap Tower)
+    const tapBase = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.07, 1.1), ironDarkMat);
+    tapBase.position.set(0.22, 1.47, -1.6);
+    barGroup.add(tapBase);
+    const tapCol = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.72, 10), brassMat);
+    tapCol.position.set(0.08, 1.84, -1.6);
+    barGroup.add(tapCol);
+    const tapHead = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.2, 0.88), brassMat);
+    tapHead.position.set(0.16, 2.22, -1.6);
+    barGroup.add(tapHead);
+    [[-0.28, 0xc92a22], [0, 0xf59e0b], [0.28, 0x2f855a]].forEach(([tz, handleCol]) => {
+      const spout = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.02, 0.16, 6), brassMat);
+      spout.position.set(0.32, 2.08, -1.6 + tz);
+      barGroup.add(spout);
+      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.022, 0.26, 6), new THREE.MeshStandardMaterial({ color: handleCol, roughness: 0.4 }));
+      handle.position.set(0.32, 2.38, -1.6 + tz);
+      handle.rotation.z = -0.22;
+      barGroup.add(handle);
+    });
+
+    // 吧檯上的泡沫生啤酒木杯 (4 杯)
+    const tankardMat = new THREE.MeshStandardMaterial({ color: 0xd99b26, roughness: 0.42 });
+    const foamMat = new THREE.MeshStandardMaterial({ color: 0xfffaf0, roughness: 0.9 });
+    [[0.48, -3.1], [0.52, -0.4], [0.46, 1.15], [0.5, 3.05]].forEach(([mx, mz]) => {
+      const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.115, 0.28, 8), tankardMat);
+      mug.position.set(mx, 1.58, mz);
+      barGroup.add(mug);
+      const mugBand = new THREE.Mesh(new THREE.CylinderGeometry(0.134, 0.128, 0.05, 8), ironDarkMat);
+      mugBand.position.set(mx, 1.54, mz);
+      barGroup.add(mugBand);
+      const foam = new THREE.Mesh(new THREE.SphereGeometry(0.135, 8, 6), foamMat);
+      foam.scale.set(1, 0.55, 1);
+      foam.position.set(mx, 1.73, mz);
+      barGroup.add(foam);
+    });
+
+    // 吧檯發光冒險魔藥瓶組 (紅／藍／綠) ＋ 黃銅服務鈴 ＋ 打開的酒館帳本
+    [[0.12, 1.95, 0xff3b5c, 0x700c1e], [0.36, 2.25, 0x38bdf8, 0x0b4a6e], [0.05, 2.42, 0x34d399, 0x065f46]].forEach(([px, pz, col, emi]) => {
+      const flask = new THREE.Mesh(
+        new THREE.SphereGeometry(0.13, 8, 8),
+        new THREE.MeshStandardMaterial({ color: col, emissive: emi, roughness: 0.2 })
+      );
+      flask.position.set(px, 1.56, pz);
+      barGroup.add(flask);
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.12, 6), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, transparent: true, opacity: 0.8 }));
+      neck.position.set(px, 1.7, pz);
+      barGroup.add(neck);
+      const corkPlug = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.03, 0.05, 6), oakTop);
+      corkPlug.position.set(px, 1.77, pz);
+      barGroup.add(corkPlug);
+    });
+
+    // 黃銅服務鈴
+    const bellBase = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.04, 10), ironDarkMat);
+    bellBase.position.set(0.55, 1.46, 0.35);
+    barGroup.add(bellBase);
+    const bellDome = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), brassMat);
+    bellDome.position.set(0.55, 1.48, 0.35);
+    barGroup.add(bellDome);
+
+    // 吧檯後方魔藥瓶壁架（套用 Canva 精繪像素酒櫃 textures/bar_shelf.png ＋ 深橡木頂冠線板！）
     const barShelfTex = texLoader.load("textures/bar_shelf.png");
     barShelfTex.magFilter = THREE.NearestFilter;
     barShelfTex.colorSpace = THREE.SRGBColorSpace;
-    const barShelfFront = new THREE.MeshStandardMaterial({ map: barShelfTex, roughness: 0.8 });
+    const barShelfFront = new THREE.MeshStandardMaterial({ map: barShelfTex, roughness: 0.78 });
     const barShelf = new THREE.Mesh(
-      new THREE.BoxGeometry(0.45, 4.0, 7.2),
+      new THREE.BoxGeometry(0.48, 4.1, 7.3),
       [barShelfFront, oakDark, oakDark, oakDark, oakDark, oakDark]
     );
-    barShelf.position.set(-18.2, 2.75, -0.5);
+    barShelf.position.set(-18.2, 2.8, -0.5);
     scene.add(barShelf);
+    const shelfCrown = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.24, 7.7), oakDark);
+    shelfCrown.position.set(-18.08, 4.92, -0.5);
+    scene.add(shelfCrown);
 
+    // 5 座高精細鍛鐵箍橡木大酒桶（含龍頭與上方小酒桶堆疊！）
+    const barrelTex = createBarrelTexture();
+    const barrelMat = new THREE.MeshStandardMaterial({ map: barrelTex, roughness: 0.82 });
     for (let i = 0; i < 5; i++) {
-      const barrel = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.52, 0.52, 1.15, 10),
-        new THREE.MeshStandardMaterial({ color: 0x7c431c, roughness: 0.85 })
-      );
-      barrel.position.set(-16.8, 0.58, -4.1 + i * 1.8);
+      const bz = -4.1 + i * 1.8;
+      const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.54, 0.5, 1.18, 12), barrelMat);
+      barrel.position.set(-16.8, 0.59, bz);
       scene.add(barrel);
+      const barrelRim = new THREE.Mesh(new THREE.TorusGeometry(0.51, 0.04, 6, 12), ironDarkMat);
+      barrelRim.rotation.x = Math.PI / 2;
+      barrelRim.position.set(-16.8, 1.15, bz);
+      scene.add(barrelRim);
+      const spigot = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.22, 6), brassMat);
+      spigot.rotation.z = Math.PI / 2;
+      spigot.position.set(-16.24, 0.35, bz);
+      scene.add(spigot);
     }
+    // 疊放兩個橫躺精釀小酒桶
+    [-3.2, 2.2].forEach(cz => {
+      const cask = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.92, 10), barrelMat);
+      cask.rotation.z = Math.PI / 2;
+      cask.position.set(-16.8, 1.54, cz);
+      scene.add(cask);
+    });
 
-    const mugMat = new THREE.MeshStandardMaterial({ color: 0xf6c453, roughness: 0.38 });
-    [[-13.8, -3.2], [-13.9, -0.8], [-13.7, 1.2], [-13.8, 2.8]].forEach(([mx, mz]) => {
-      const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.12, 0.28, 8), mugMat);
-      mug.position.set(mx, 1.54, mz);
-      scene.add(mug);
+    // 吧檯上方三盞懸掛式暖琥珀銅罩吊燈
+    [-3.6, -0.5, 2.6].forEach(lz => {
+      const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.8, 6), ironDarkMat);
+      chain.position.set(-14.1, 5.1, lz);
+      scene.add(chain);
+      const shade = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.3, 10), copperMat);
+      shade.position.set(-14.1, 4.18, lz);
+      scene.add(shade);
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffe484 }));
+      bulb.position.set(-14.1, 4.0, lz);
+      scene.add(bulb);
+      const pHalo = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: haloTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      }));
+      pHalo.scale.set(1.6, 1.6, 1);
+      pHalo.position.set(-14.1, 4.0, lz);
+      scene.add(pHalo);
+      const barLampLight = new THREE.PointLight(0xffbe55, 1.15, 9.5);
+      barLampLight.position.set(-13.8, 3.85, lz);
+      scene.add(barLampLight);
+      lanternLights.push(barLampLight);
     });
 
     const barSign = createSignSprite("🍻 冒險者酒館吧檯", "#6e3814", "#f5be4f");
-    barSign.position.set(-14.2, 3.2, -0.5);
+    barSign.position.set(-14.2, 3.25, -0.5);
     barSign.userData = { clickType: "interactable", targetId: "tavern-bar" };
     clickableMeshes.push(barSign);
     scene.add(barSign);
@@ -1293,32 +1882,97 @@
     clickableMeshes.push(mapSign);
     scene.add(mapSign);
 
-    // 11. 兩張角落燭光長桌（無椅子，清爽點綴）
-    function addCandleTable(tx, tz) {
-      const top = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.16, 1.6), oakTop);
-      top.position.set(tx, 0.88, tz);
-      scene.add(top);
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.86, 0.65), oakDark);
-      leg.position.set(tx, 0.43, tz);
-      scene.add(leg);
-      const candle = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.08, 0.09, 0.28, 6),
-        new THREE.MeshBasicMaterial({ color: 0xffeb99 })
+    // 11. 🍞 兩張角落 3D 雕花盛宴燭光長桌套件（紅金繡邊桌巾＋四柱雕花桌腳＋麵包蘋果盤＋泡沫杯＋搖曳燭光，無椅子！）
+    const feastTableTex = createFeastTableTexture();
+    const feastTopMat = new THREE.MeshStandardMaterial({ map: feastTableTex, roughness: 0.72 });
+    const breadMat = new THREE.MeshStandardMaterial({ color: 0xd48b3b, roughness: 0.85 });
+    const appleMat = new THREE.MeshStandardMaterial({ color: 0xd92626, roughness: 0.35 });
+    const platterMat = new THREE.MeshStandardMaterial({ color: 0x733c17, roughness: 0.8 });
+
+    function addFeastTable(tx, tz) {
+      const tg = new THREE.Group();
+      tg.position.set(tx, 0, tz);
+      scene.add(tg);
+
+      // 帶紅金桌巾的精繪橡木桌面
+      const top = new THREE.Mesh(
+        new THREE.BoxGeometry(2.76, 0.16, 1.66),
+        [oakDark, oakDark, feastTopMat, oakDark, oakDark, oakDark]
       );
-      candle.position.set(tx, 1.1, tz);
-      scene.add(candle);
+      top.position.y = 0.88;
+      tg.add(top);
+
+      // 桌下圍裙板與 H 型橫樑＋四隻雕花柱腳
+      const tApron = new THREE.Mesh(new THREE.BoxGeometry(2.38, 0.18, 1.28), oakDark);
+      tApron.position.y = 0.72;
+      tg.add(tApron);
+      const tBeam = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.1, 0.14), oakDark);
+      tBeam.position.y = 0.24;
+      tg.add(tBeam);
+
+      [[-1.12, -0.58], [1.12, -0.58], [-1.12, 0.58], [1.12, 0.58]].forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.82, 0.2), oakDark);
+        leg.position.set(lx, 0.41, lz);
+        tg.add(leg);
+        const foot = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.1, 0.28), oakTop);
+        foot.position.set(lx, 0.05, lz);
+        tg.add(foot);
+      });
+
+      // 中央黃銅燭台＋搖曳火光
+      const cHolder = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.19, 0.06, 10), brassMat);
+      cHolder.position.set(0, 0.99, 0);
+      tg.add(cHolder);
+      const cWax = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.075, 0.3, 8), new THREE.MeshStandardMaterial({ color: 0xfff3d6 }));
+      cWax.position.set(0, 1.15, 0);
+      tg.add(cWax);
+      const cFlame = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.16, 6), new THREE.MeshBasicMaterial({ color: 0xffd24d }));
+      cFlame.position.set(0, 1.36, 0);
+      tg.add(cFlame);
+      candleFlames.push(cFlame);
+
+      const cLight = new THREE.PointLight(0xffbe55, 0.95, 6.2);
+      cLight.position.set(0, 1.65, 0);
+      tg.add(cLight);
+      lanternLights.push(cLight);
+
+      // 左側：木製點心托盤＋金黃歐式麵包＋紅蘋果
+      const platter = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.34, 0.05, 12), platterMat);
+      platter.position.set(-0.78, 0.99, 0.12);
+      tg.add(platter);
+      const bread = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 6), breadMat);
+      bread.scale.set(1.35, 0.72, 0.9);
+      bread.position.set(-0.84, 1.09, 0.08);
+      tg.add(bread);
+      [[-0.58, 0.2], [-0.66, 0.04]].forEach(([ax, az]) => {
+        const apple = new THREE.Mesh(new THREE.SphereGeometry(0.085, 8, 8), appleMat);
+        apple.position.set(ax, 1.08, az);
+        tg.add(apple);
+      });
+
+      // 右側：兩杯泡沫蜂蜜啤酒＋敞開的冒險小筆記本
+      [[0.72, -0.22], [0.95, 0.15]].forEach(([mx, mz]) => {
+        const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.1, 0.24, 8), tankardMat);
+        mug.position.set(mx, 1.08, mz);
+        tg.add(mug);
+        const foam = new THREE.Mesh(new THREE.SphereGeometry(0.115, 8, 6), foamMat);
+        foam.scale.set(1, 0.55, 1);
+        foam.position.set(mx, 1.21, mz);
+        tg.add(foam);
+      });
+      const noteBook = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 0.32), new THREE.MeshStandardMaterial({ color: 0xfff5db, roughness: 0.9 }));
+      noteBook.position.set(0.62, 0.98, 0.36);
+      noteBook.rotation.y = -0.28;
+      tg.add(noteBook);
     }
-    addCandleTable(-8.7, 5.8);
-    addCandleTable(8.9, 5.8);
+    addFeastTable(-8.7, 5.8);
+    addFeastTable(8.9, 5.8);
 
     // 12. 🏛️ 四根雕花橡木公會立柱套件（石磚雙層底座＋鍛鐵木柱＋燕尾公會旗＋鍛鐵暖光提燈！）
     const pillarWoodTex = createPillarWoodTexture();
     const pillarWoodMat = new THREE.MeshStandardMaterial({ map: pillarWoodTex, roughness: 0.82 });
-    const stoneBaseTex = createStoneBaseTexture();
-    const stoneBaseMat = new THREE.MeshStandardMaterial({ map: stoneBaseTex, roughness: 0.92 });
     const bannerTex = createGuildBannerTexture();
     const bannerMat = new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true, alphaTest: 0.1, side: THREE.DoubleSide });
-    const haloTex = createWarmHaloTexture();
 
     [[-6.3, -3.3], [6.3, -3.3], [-6.3, 3.0], [6.3, 3.0]].forEach(([px, pz]) => {
       const pg = new THREE.Group();
@@ -1399,20 +2053,81 @@
       lanternLights.push(ll);
     });
 
-    // 13. 🪴 四盆室內大盆栽松樹（四角綠意點綴）
-    const potMat = new THREE.MeshStandardMaterial({ color: 0x9e4c2a, roughness: 0.85 });
-    const leafMat1 = new THREE.MeshStandardMaterial({ color: 0x2f7025, roughness: 0.9 });
-    const leafMat2 = new THREE.MeshStandardMaterial({ color: 0x459436, roughness: 0.9 });
-    [[-16.4, -10.4], [16.2, -10.4], [-16.4, 9.6], [16.2, 9.6]].forEach(([tx, tz]) => {
-      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.42, 0.75, 8), potMat);
-      pot.position.set(tx, 0.38, tz);
-      scene.add(pot);
-      const cone1 = new THREE.Mesh(new THREE.ConeGeometry(1.05, 1.6, 7), leafMat1);
-      cone1.position.set(tx, 1.45, tz);
-      scene.add(cone1);
-      const cone2 = new THREE.Mesh(new THREE.ConeGeometry(0.75, 1.3, 7), leafMat2);
-      cone2.position.set(tx, 2.35, tz);
-      scene.add(cone2);
+    // 13. 🪴 四盆 3D 精雕陶盆常青植栽樹套件（石底托盤＋鍛鐵陶盆＋分枝木幹＋三層立體翠綠樹冠＋星光小燈串與冬果！）
+    const potMat = new THREE.MeshStandardMaterial({ color: 0xa84b28, roughness: 0.78 });
+    const potRimMat = new THREE.MeshStandardMaterial({ color: 0xbf5d36, roughness: 0.72 });
+    const soilMat = new THREE.MeshStandardMaterial({ color: 0x3b2313, roughness: 0.96 });
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5c3418, roughness: 0.9 });
+    const leafDeep = new THREE.MeshStandardMaterial({ color: 0x1e5c24, roughness: 0.88 });
+    const leafMid = new THREE.MeshStandardMaterial({ color: 0x328236, roughness: 0.86 });
+    const leafBright = new THREE.MeshStandardMaterial({ color: 0x57ad44, roughness: 0.82 });
+    const berryMat = new THREE.MeshBasicMaterial({ color: 0xe63946 });
+    const fairyLightMat = new THREE.MeshBasicMaterial({ color: 0xffe885 });
+
+    [[-16.4, -10.4], [16.2, -10.4], [-16.4, 9.6], [16.2, 9.6]].forEach(([tx, tz], idx) => {
+      const pg = new THREE.Group();
+      pg.position.set(tx, 0, tz);
+      pg.rotation.y = idx * 1.1;
+      scene.add(pg);
+
+      // 石板托盤＋厚實滾邊紅陶大花盆＋黃銅箍帶
+      const saucer = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.68, 0.1, 10), stoneBaseMat);
+      saucer.position.y = 0.05;
+      pg.add(saucer);
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.64, 0.46, 0.84, 10), potMat);
+      pot.position.y = 0.5;
+      pg.add(pot);
+      const potRim = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.66, 0.14, 10), potRimMat);
+      potRim.position.y = 0.92;
+      pg.add(potRim);
+      const potBand = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.55, 0.09, 10), brassMat);
+      potBand.position.y = 0.58;
+      pg.add(potBand);
+
+      // 深色沃土丘
+      const soil = new THREE.Mesh(new THREE.SphereGeometry(0.56, 10, 6), soilMat);
+      soil.scale.set(1, 0.25, 1);
+      soil.position.y = 0.96;
+      pg.add(soil);
+
+      // 分枝自然木質主幹與側枝
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.17, 1.35, 8), trunkMat);
+      trunk.position.y = 1.52;
+      pg.add(trunk);
+      [[0.22, 1.85, 0.12, -0.45], [-0.2, 1.72, -0.1, 0.48]].forEach(([bx, by, bz, tilt]) => {
+        const br = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 0.68, 6), trunkMat);
+        br.position.set(bx, by, bz);
+        br.rotation.z = tilt;
+        pg.add(br);
+      });
+
+      // 多層立體翠綠樹冠球簇 (Dodecahedron 柔和像素風葉簇！)
+      const puffs = [
+        [0, 2.25, 0, 0.72, leafDeep],
+        [-0.52, 2.08, 0.25, 0.54, leafDeep],
+        [0.54, 2.12, -0.22, 0.52, leafDeep],
+        [0.18, 2.16, 0.48, 0.5, leafMid],
+        [-0.25, 2.45, -0.35, 0.52, leafMid],
+        [0.36, 2.58, 0.18, 0.46, leafMid],
+        [-0.18, 2.82, 0.12, 0.42, leafBright],
+        [0.1, 3.05, -0.05, 0.34, leafBright]
+      ];
+      puffs.forEach(([fx, fy, fz, rad, mat]) => {
+        const puff = new THREE.Mesh(new THREE.DodecahedronGeometry(rad, 0), mat);
+        puff.position.set(fx, fy, fz);
+        puff.scale.set(1.08, 0.88, 1.08);
+        pg.add(puff);
+      });
+
+      // 樹冠上點綴暖金色微光燈珠與冬日小紅果
+      [[0.48, 2.35, 0.38, true], [-0.46, 2.48, 0.26, false], [0.16, 2.86, 0.34, true], [-0.28, 2.12, 0.55, false], [0.42, 2.7, -0.22, true], [-0.1, 3.18, 0.16, true]].forEach(([dx, dy, dz, isLight]) => {
+        const dot = new THREE.Mesh(
+          new THREE.SphereGeometry(isLight ? 0.06 : 0.055, 6, 6),
+          isLight ? fairyLightMat : berryMat
+        );
+        dot.position.set(dx, dy, dz);
+        pg.add(dot);
+      });
     });
 
     // 14. 點地板目標光環
