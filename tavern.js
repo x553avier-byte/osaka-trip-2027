@@ -28,17 +28,21 @@
     { minX:  5.7, maxX:  6.9, minZ:  2.4, maxZ:  3.6 }
   ];
 
-  // 9 位家族成員在 38×26 大廳裡的寬敞站位（每個人都有超大活動空間！）
+  // 13 位家族成員在 38×26 大廳裡的寬敞站位（每個人都有超大活動空間！）
   const DEFAULT_SPOTS = {
-    yenting:  { x:  0.0, z:  0.8, dir: "down" },
-    chinghua: { x: -10.5, z: -2.4, dir: "right" },
-    naichi:   { x: -4.2, z: -1.8, dir: "down" },
-    tingyin:  { x: -10.2, z:  2.0, dir: "right" },
-    qinyan:   { x:  0.0, z:  8.4, dir: "up" },
-    qianyi:   { x:  4.2, z: -1.6, dir: "down" },
-    chanchi:  { x: 11.4, z: -5.2, dir: "left" },
-    yanyi:    { x: -2.4, z: -6.6, dir: "down" },
-    beichen:  { x: 11.8, z:  3.8, dir: "left" }
+    yenting:   { x:   0.0, z:  0.8, dir: "down" },
+    chinghua:  { x: -10.5, z: -2.4, dir: "right" },
+    naichi:    { x:  -4.2, z: -1.8, dir: "down" },
+    tingyin:   { x: -10.2, z:  2.0, dir: "right" },
+    qinyan:    { x:   0.0, z:  8.4, dir: "up" },
+    qianyi:    { x:   4.2, z: -1.6, dir: "down" },
+    chanchi:   { x:  11.4, z: -5.2, dir: "left" },
+    yanyi:     { x:  -2.4, z: -6.6, dir: "down" },
+    beichen:   { x:  11.8, z:  3.8, dir: "left" },
+    hongzhong: { x:   3.4, z: -6.8, dir: "down" },
+    anghsien:  { x:  -4.6, z:  8.2, dir: "up" },
+    yiping:    { x:   4.8, z:  8.0, dir: "up" },
+    jiahao:    { x:  12.6, z: -0.6, dir: "left" }
   };
 
   // 酒館內可互動據點＆冒險傳送門（未來新增新旅遊場景只需在這裡加一筆）

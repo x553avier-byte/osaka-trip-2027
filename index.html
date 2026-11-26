@@ -1592,7 +1592,7 @@
                 <span class="wood-badge" style="background:var(--leaf-green);">進行中</span>
               </div>
               <div style="font-size:14.5px; color:var(--ink-muted); margin-top:4px;">
-                2027/1/21 - 1/27 ｜ 7 位遠征團員 ＋ 2 位台灣應援團
+                2027/1/21 - 1/27 ｜ 7 位遠征團員 ＋ 6 位台灣應援團
               </div>
             </div>
             <div style="display:flex; gap:7px; flex-wrap:wrap;">
@@ -1621,16 +1621,16 @@
     </section>
 
     <!-- =======================================================================
-         VIEW 1: PARTY & CHARACTER SELECT (預設第一頁：9 位家族小人＋個人檔案)
+         VIEW 1: PARTY & CHARACTER SELECT (預設第一頁：13 位家族小人＋個人檔案)
          ======================================================================= -->
     <section id="view-party" class="view-section active">
       <div class="sdv-box">
         <h2 class="section-title">
           <span>🌾 關西冒險小鎮廣場</span>
-          <span id="online-count-badge" class="wood-badge">🟢 1 / 9 人上線</span>
+          <span id="online-count-badge" class="wood-badge">🟢 1 / 13 人上線</span>
         </h2>
 
-        <!-- 上方：9 位像素小人與上線狀態 -->
+        <!-- 上方：13 位像素小人與上線狀態 -->
         <div class="sprite-plaza">
           <div id="sprite-roster" class="sprite-roster"></div>
         </div>
@@ -2004,7 +2004,7 @@
 
   <!-- Three.js (UMD Build) & Tavern Engine -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="tavern.js?v=10"></script>
+  <script src="tavern.js?v=11"></script>
 
   <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -2146,7 +2146,7 @@
         day4Group: "🟡 京都錦市場「ちいかわベビーカステラ」迷你蜂蜜蛋糕（09:05 出發，全店無現金支付！）",
         day6Group: "🛍️ 臨空城 Outlet ／ 🏺 土偶專線自由選"
       },
-      // --- 新增 2 位：台灣本營應援團（無大阪行，但可瀏覽全員行程、定位與戰利品＆登記代購願望！） ---
+      // --- 台灣本營應援團（6 位：無大阪行，但可瀏覽全員行程、定位與戰利品＆登記代購願望！） ---
       {
         id: "yanyi",
         name: "劉晏伊",
@@ -2174,6 +2174,70 @@
         sprite: "sprites/beichen.gif",
         sheet: "sheets/beichen_4x4.png",
         quote: "「雖然這次沒去大阪，但在酒館隨時追蹤你們的冒險動態，記得多買伴手禮回來！」",
+        flightGo: "本次未隨行大阪（台灣本營遠端應援）",
+        flightBack: "歡迎使用寶箱許願伴手禮清單！",
+        day4Group: "",
+        day6Group: ""
+      },
+      {
+        id: "hongzhong",
+        name: "陳鴻忠",
+        en: "CHEN HONGZHONG",
+        role: "港灣領航員",
+        isCaptain: false,
+        inOsakaTrip: false,
+        avatar: "avatars/hongzhong.jpg",
+        sprite: "sprites/hongzhong.gif",
+        sheet: "sheets/hongzhong_4x4.png",
+        quote: "「在高雄港灣遠端守候大家！祝關西遠征隊一路順風、平安滿載而歸！」",
+        flightGo: "本次未隨行大阪（台灣本營遠端應援）",
+        flightBack: "歡迎使用寶箱許願伴手禮清單！",
+        day4Group: "",
+        day6Group: ""
+      },
+      {
+        id: "anghsien",
+        name: "郭昂憲",
+        en: "KUO ANGHSIEN",
+        role: "機甲工匠",
+        isCaptain: false,
+        inOsakaTrip: false,
+        avatar: "avatars/anghsien.jpg",
+        sprite: "sprites/anghsien.gif",
+        sheet: "sheets/anghsien_4x4.png",
+        quote: "「工坊裝備都檢修完畢！大家在大阪盡情玩樂，後勤支援就交給本營吧！」",
+        flightGo: "本次未隨行大阪（台灣本營遠端應援）",
+        flightBack: "歡迎使用寶箱許願伴手禮清單！",
+        day4Group: "",
+        day6Group: ""
+      },
+      {
+        id: "yiping",
+        name: "陳依萍",
+        en: "CHEN YIPING",
+        role: "花田守護者",
+        isCaptain: false,
+        inOsakaTrip: false,
+        avatar: "avatars/yiping.jpg",
+        sprite: "sprites/yiping.gif",
+        sheet: "sheets/yiping_4x4.png",
+        quote: "「一月關西很冷要記得多穿點保暖喔！每天都會來酒館看看大家的冒險動態～」",
+        flightGo: "本次未隨行大阪（台灣本營遠端應援）",
+        flightBack: "歡迎使用寶箱許願伴手禮清單！",
+        day4Group: "",
+        day6Group: ""
+      },
+      {
+        id: "jiahao",
+        name: "吳家豪",
+        en: "WU JIAHAO",
+        role: "夜市美食家",
+        isCaptain: false,
+        inOsakaTrip: false,
+        avatar: "avatars/jiahao.jpg",
+        sprite: "sprites/jiahao.gif",
+        sheet: "sheets/jiahao_4x4.png",
+        quote: "「道頓堀跟黑門市場記得多拍點美食照回來，我在酒館隨時幫大家加油打氣！」",
         flightGo: "本次未隨行大阪（台灣本營遠端應援）",
         flightBack: "歡迎使用寶箱許願伴手禮清單！",
         day4Group: "",
@@ -2443,7 +2507,7 @@
             isFirebaseConnected = true;
             badge.className = "sync-pill sync-online";
             badge.textContent = "● 雲端同步";
-            detail.innerHTML = `✅ 已連線至家族雲端資料庫！9 位成員的<b>酒館走動位置</b>、<b>上線狀態</b>、<b>行李勾選</b>、<b>寶箱戰利品</b>與<b>行李重量</b>皆即時跨裝置同步。`;
+            detail.innerHTML = `✅ 已連線至家族雲端資料庫！${MEMBERS.length} 位成員的<b>酒館走動位置</b>、<b>上線狀態</b>、<b>行李勾選</b>、<b>寶箱戰利品</b>與<b>行李重量</b>皆即時跨裝置同步。`;
             registerPresence(currentMemberId);
           } else {
             isFirebaseConnected = false;
@@ -2541,7 +2605,7 @@
         "<span>🏯 傳送門：2027 大阪關西遠征</span>",
         `<div class="sdv-card" style="margin-bottom:8px;">
           <b>📅 冒險日期：</b>2027/01/21 (四) ～ 01/27 (三)<br/>
-          <b>👥 遠征成員：</b>7 位遠征團員 ＋ 2 位台灣應援團<br/>
+          <b>👥 遠征成員：</b>${OSAKA_MEMBERS.length} 位遠征團員 ＋ ${SUPPORTER_MEMBERS.length} 位台灣應援團<br/>
           <div style="margin-top:6px; color:var(--ink-muted);">${roleNote}</div>
         </div>`,
         `<button class="sdv-btn sdv-btn-gold" onclick="closeTavernDialog(); switchTab('quest')">📅 進入每日行程</button>
@@ -2559,7 +2623,7 @@
           • 🗼 <b>東京近郊／迪士尼冒險</b><br/>
           • ❄️ <b>北海道滑雪美食遠征</b><br/>
           • 🌺 <b>沖繩／九州自駕行</b><br/><br/>
-          都可以直接掛載在這座酒館裡，讓 9 位家族角色從同一個酒館出發去不同場景！
+          都可以直接掛載在這座酒館裡，讓 ${MEMBERS.length} 位家族角色從同一個酒館出發去不同場景！
         </div>`,
         `<button class="sdv-btn sdv-btn-blue" onclick="closeTavernDialog()">期待下一趟冒險！</button>`
       );
@@ -3565,7 +3629,7 @@
       // 4. 留守應援團狀態
       const supportersHtml = `
         <div class="sdv-subpanel" style="margin-top:12px;">
-          <strong style="color:var(--sky-dark);">🏠 台灣本營應援團（2 位）</strong>
+          <strong style="color:var(--sky-dark);">🏠 台灣本營應援團（${SUPPORTER_MEMBERS.length} 位）</strong>
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; margin-top:8px;">
             ${SUPPORTER_MEMBERS.map(sm => {
               const on = isMemberOnline(sm.id);
