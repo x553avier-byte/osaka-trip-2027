@@ -29,7 +29,7 @@
   ];
 
   // 13 位家族成員在 38×26 大廳裡的寬敞站位（每個人都有超大活動空間！）
-  const DEFAULT_SPOTS = {
+  const DEFAULT_SPOTS = (window.TRIP_CONFIG && window.TRIP_CONFIG.tavernSpots) || {
     yenting:   { x:   0.0, z:  0.8, dir: "down" },
     chinghua:  { x: -10.5, z: -2.4, dir: "right" },
     naichi:    { x:  -4.2, z: -1.8, dir: "down" },
