@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="theme.css?v=13" />
+  <link rel="stylesheet" href="theme.css?v=14" />
 </head>
 <body>
 
@@ -455,8 +455,8 @@
 
   <!-- Three.js (UMD Build) & Tavern Engine -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="trip-data.js?v=13"></script>
-  <script src="tavern.js?v=13"></script>
+  <script src="trip-data.js?v=14"></script>
+  <script src="tavern.js?v=14"></script>
 
   <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1783,17 +1783,29 @@
     }
 
     // =========================================================================
-    // 9. 每日行程與家族定位雷達渲染
+    // 9. 每日行程（含「分頭路線對照模式」）與家族定位雷達渲染
     // =========================================================================
+    let questSplitMode = "all"; // 'all' = 全員分頭路線並排總覽, 'mine' = 只看我的路線, 或指定 group.id
+
+    function setQuestSplitMode(mode) {
+      questSplitMode = mode;
+      renderQuest();
+    }
+    window.setQuestSplitMode = setQuestSplitMode;
+
     function renderQuest() {
       const scroller = document.getElementById("day-scroller");
       scroller.innerHTML = "";
       ITINERARY_DAYS.forEach(d => {
+        const hasSplit = Array.isArray(d.splitGroups) && d.splitGroups.length > 0;
         const btn = document.createElement("button");
         btn.className = "day-pill" + (d.day === selectedDay ? " active" : "");
-        btn.textContent = `Day ${d.day} (${d.date.split(" ")[0]})`;
+        btn.innerHTML = `Day ${d.day} (${d.date.split(" ")[0]})${hasSplit ? ' <span style="font-size:12px; opacity:0.9;">🔀分組</span>' : ''}`;
         btn.onclick = () => {
           selectedDay = d.day;
+          if (questSplitMode !== "all" && questSplitMode !== "mine") {
+            questSplitMode = "all";
+          }
           renderQuest();
         };
         scroller.appendChild(btn);
@@ -1804,7 +1816,92 @@
       const container = document.getElementById("day-detail-container");
 
       let branchHtml = "";
-      if (dayData.useBranch) {
+      const hasSplitGroups = Array.isArray(dayData.splitGroups) && dayData.splitGroups.length > 0;
+
+      if (hasSplitGroups) {
+        const groups = dayData.splitGroups;
+        // Validate questSplitMode
+        const validIds = groups.map(g => g.id);
+        if (questSplitMode !== "all" && questSplitMode !== "mine" && !validIds.includes(questSplitMode)) {
+          questSplitMode = "all";
+        }
+
+        const myGroup = groups.find(g => Array.isArray(g.memberIds) && g.memberIds.includes(member.id));
+
+        // Mode switcher buttons
+        const modeBtnsHtml = [
+          `<button class="filter-pill ${questSplitMode === 'all' ? 'active' : ''}" onclick="setQuestSplitMode('all')">👨‍👩‍👧‍👦 全員分頭路線總覽 (${groups.length}組)</button>`,
+          member.inOsakaTrip && myGroup
+            ? `<button class="filter-pill ${questSplitMode === 'mine' ? 'active' : ''}" onclick="setQuestSplitMode('mine')">⭐ 只看【${member.name}】的路線</button>`
+            : "",
+          ...groups.map(g =>
+            `<button class="filter-pill ${questSplitMode === g.id ? 'active' : ''}" onclick="setQuestSplitMode('${g.id}')">${g.name.split("｜")[0]}</button>`
+          )
+        ].filter(Boolean).join("");
+
+        const visibleGroups = groups.filter(g => {
+          if (questSplitMode === "all") return true;
+          if (questSplitMode === "mine") return myGroup ? g.id === myGroup.id : true;
+          return g.id === questSplitMode;
+        });
+
+        const groupCardsHtml = visibleGroups.map(g => {
+          const isMyGroup = Array.isArray(g.memberIds) && g.memberIds.includes(member.id);
+          const groupMembers = (g.memberIds || []).map(mid => MEMBERS.find(m => m.id === mid)).filter(Boolean);
+
+          const memberChipsHtml = groupMembers.map(gm => `
+            <span onclick="selectMember('${gm.id}')" title="點此切換角色為 ${gm.name}" style="display:inline-flex; align-items:center; gap:5px; padding:3px 9px 3px 5px; border-radius:999px; background:${gm.id === member.id ? '#ffe082' : '#fff'}; border:2px solid ${gm.id === member.id ? '#b86f09' : 'rgba(120,62,18,0.35)'}; font-size:13.5px; font-weight:bold; color:var(--ink-title); cursor:pointer;">
+              <img src="${gm.sprite}" alt="${gm.name}" style="width:22px; height:22px; object-fit:contain; image-rendering:pixelated;" />
+              <span>${gm.name}${gm.id === member.id ? ' (你)' : ''}</span>
+            </span>
+          `).join("");
+
+          const stepsHtml = (g.steps || []).map(st => `
+            <div style="display:flex; align-items:flex-start; gap:8px; padding:6px 0; border-top:1px dashed rgba(120,62,18,0.22);">
+              <span class="time-badge" style="background:${g.color || 'var(--wood-dark)'}; flex-shrink:0; font-size:12.5px; padding:2px 7px;">${st.time}</span>
+              <div style="font-size:15px; color:var(--ink-main); line-height:1.5;">${st.desc}</div>
+            </div>
+          `).join("");
+
+          return `
+            <div class="sdv-card" style="background:${g.bg || '#fffdf5'}; border:2.5px solid ${isMyGroup ? (g.color || '#b86f09') : 'var(--wood-mid)'}; box-shadow:${isMyGroup ? '0 0 0 2px rgba(255,204,0,0.45)' : 'none'}; margin-bottom:10px; padding:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
+                <div style="display:flex; align-items:center; gap:7px; flex-wrap:wrap;">
+                  <strong style="font-size:17px; color:${g.color || 'var(--ink-title)'};">${g.name}</strong>
+                  ${isMyGroup ? '<span class="wood-badge" style="background:var(--leaf-green); font-size:12px;">⭐ 你的分組</span>' : ''}
+                </div>
+                ${g.badge ? `<span class="wood-badge" style="background:${g.color || 'var(--wood-dark)'}; font-size:12px;">${g.badge}</span>` : ''}
+              </div>
+
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+                <span style="font-size:13.5px; color:var(--ink-muted); font-weight:bold;">👥 同行成員：</span>
+                ${memberChipsHtml}
+              </div>
+
+              ${g.summary ? `<div style="font-size:14.5px; font-weight:bold; color:var(--ink-title); background:rgba(255,255,255,0.75); padding:6px 9px; border-radius:6px; margin-bottom:6px;">🧭 ${g.summary}</div>` : ''}
+
+              <div>${stepsHtml}</div>
+            </div>
+          `;
+        }).join("");
+
+        branchHtml = `
+          <div class="sdv-subpanel" style="margin-top:12px; padding:12px; background:#fff8e4; border:2px solid var(--gold-deep);">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:9px;">
+              <div>
+                <strong style="font-size:17px; color:var(--ink-title);">🔀 分頭行程＆各組搭車對照模式</strong>
+                <div style="font-size:13.5px; color:var(--ink-muted);">可切換查看「全員分組並排總覽」或單獨檢視各組詳細轉車時刻表（點擊成員頭像亦可切換角色）</div>
+              </div>
+            </div>
+            <div class="filter-pills" style="margin-bottom:10px;">
+              ${modeBtnsHtml}
+            </div>
+            <div>
+              ${groupCardsHtml}
+            </div>
+          </div>
+        `;
+      } else if (dayData.useBranch) {
         if (member.inOsakaTrip && member[dayData.useBranch]) {
           branchHtml = `
             <div class="special-branch">
@@ -1816,7 +1913,6 @@
             </div>
           `;
         } else {
-          // 留守應援團看到今日全員分組總覽
           const allBranches = OSAKA_MEMBERS.map(om =>
             `<div style="font-size:14.5px; margin-top:4px;">• <b>${om.name}</b>：${om[dayData.useBranch]}</div>`
           ).join("");
@@ -1857,6 +1953,7 @@
           ${branchHtml}
 
           <div style="margin-top:13px;">
+            <h4 style="margin:0 0 8px 0; font-size:16.5px; color:var(--ink-title);">🕒 當日主線＆會合時間軸</h4>
             ${eventsHtml}
           </div>
 
